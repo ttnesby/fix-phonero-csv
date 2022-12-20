@@ -5375,7 +5375,11 @@ var $author$project$Upload$update = F2(
 			case 0:
 				return _Utils_Tuple2(
 					model,
-					A2($elm$file$File$Select$file, _List_Nil, $author$project$Upload$FileSelected));
+					A2(
+						$elm$file$File$Select$file,
+						_List_fromArray(
+							['text/csv']),
+						$author$project$Upload$FileSelected));
 			case 1:
 				var file = msg.a;
 				return _Utils_Tuple2(
