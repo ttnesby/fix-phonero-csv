@@ -1,85 +1,49 @@
 module Upload exposing (..)
 
--- File upload with the <input type="file"> node.
---
--- Dependencies:
---   elm install elm/file
---   elm install elm/json
---
-
 import Browser
 import File exposing (File)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Json.Decode as D
-
-
-
--- MAIN
-
-
-main : Program () (Model) Msg
-main =
-    Browser.element
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = subscriptions
-        }
-
-
-
--- MODEL
+import File.Select as Select
+import Html exposing (Html, button, div, p, text)
+import Html.Events exposing (onClick)
+import Task
 
 
 type alias Model =
-    List File
-
-
-init : () -> ( Model, Cmd Msg )
-init _ = ( [], Cmd.none )
-
--- UPDATE
+    String
 
 
 type Msg
-    = GotFiles (List File)
+    = OpenFileClicked
+    | FileSelected File
+    | FileRead String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg _ =
+update msg model =
     case msg of
-        GotFiles files ->
-            ( files, Cmd.none )
+        OpenFileClicked ->
+            ( model, Select.file [] FileSelected )
 
+        FileSelected file ->
+            ( model, Task.perform FileRead (File.toString file) )
 
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
-
-
-
--- VIEW
+        FileRead content ->
+            ( content, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ input
-            [ type_ "file"
-            , multiple False
-            , on "change" (D.map GotFiles filesDecoder)
-            ]
-            []
-        , div [] [ text (Debug.toString model) ]
+        [ button [ onClick OpenFileClicked ] [ text "Open file" ]
+        , p [] [ text model ]
         ]
 
 
-filesDecoder : D.Decoder (List File)
-filesDecoder =
-    D.at [ "target", "files" ] (D.list File.decoder)
+main : Program () Model Msg
+main =
+    Browser.element
+        { init = always ( "", Cmd.none )
+        , view = view
+        , update = update
+        , subscriptions = always Sub.none
+        }
