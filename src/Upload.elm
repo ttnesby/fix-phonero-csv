@@ -1,5 +1,7 @@
 module Upload exposing (..)
 
+-- https://github.com/elm/file/blob/master/README.md
+
 import Browser
 import File exposing (File)
 import File.Select as Select
