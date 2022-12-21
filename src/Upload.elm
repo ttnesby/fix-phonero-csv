@@ -6,19 +6,42 @@ import Browser
 import File exposing (File)
 import File.Download as Download
 import File.Select as Select
-import Html exposing (Html, button, div, p, text)
+import Html exposing (Html, button, div, table, td, text, tr)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import String
 import Task
 
 
+
+-- HELPERS
+
+
+csvCol : Int -> String -> Html Msg
+csvCol colNo value =
+    if List.member colNo [ 0, 1, 4, 5, 6, 16 ] then
+        td [ style "background-color" "#D6EEEE" ] [ text value ]
+
+    else
+        td [] [ text value ]
+
+
+csvRow : String -> Html Msg
+csvRow row =
+    let
+        cols =
+            row |> mapLine |> String.split ";"
+    in
+    tr []
+        (List.indexedMap csvCol cols)
+
+
 mapValue : Int -> String -> String
 mapValue colNo value =
-    if colNo == 0 || colNo == 1 then
+    if List.member colNo [ 0, 1 ] then
         "0"
 
-    else if colNo == 4 || colNo == 5 || colNo == 6 then
+    else if List.member colNo [ 4, 5, 6 ] then
         "0.00"
 
     else if colNo == 16 then
@@ -66,9 +89,12 @@ downloadCSV csv fName =
         Just content ->
             Download.string fName "text/csv" (mapCSV content)
 
+
 downloadFileName : String -> String
 downloadFileName fName =
-    (String.dropRight 4 fName) ++ "-FIXED.csv"
+    String.dropRight 4 fName ++ "-FIXED.csv"
+
+
 
 -- MAIN
 
@@ -88,9 +114,8 @@ main =
 
 
 type alias Model =
-    { 
-        csv : Maybe (List String)
-        , fName : String
+    { csv : Maybe (List String)
+    , fName : String
     }
 
 
@@ -119,7 +144,7 @@ update msg model =
             )
 
         CsvSelected file ->
-            ( {model | fName = downloadFileName <| File.name file}
+            ( { model | fName = downloadFileName <| File.name file }
             , Task.perform CsvLoaded (File.toString file)
             )
 
@@ -147,7 +172,11 @@ view model =
         Just content ->
             div []
                 [ button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
-                , p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
+
+                --, p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
+                , table [ style "border-spacing" "10px" ]
+                    (List.map csvRow content)
+                , button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
                 ]
 
 

@@ -798,11 +798,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.K.z === region.P.z)
+	if (region.K.A === region.P.A)
 	{
-		return 'on line ' + region.K.z;
+		return 'on line ' + region.K.A;
 	}
-	return 'on lines ' + region.K.z + ' through ' + region.P.z;
+	return 'on lines ' + region.K.A + ' through ' + region.P.A;
 }
 
 
@@ -5347,7 +5347,7 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Upload$Model = F2(
 	function (csv, fName) {
-		return {E: csv, F: fName};
+		return {F: csv, z: fName};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5377,9 +5377,47 @@ var $elm$core$String$dropRight = F2(
 	function (n, string) {
 		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
 	});
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
 var $author$project$Upload$mapValue = F2(
 	function (colNo, value) {
-		return ((!colNo) || (colNo === 1)) ? '0' : (((colNo === 4) || ((colNo === 5) || (colNo === 6))) ? '0.00' : ((colNo === 16) ? '\"\"' : value));
+		return A2(
+			$elm$core$List$member,
+			colNo,
+			_List_fromArray(
+				[0, 1])) ? '0' : (A2(
+			$elm$core$List$member,
+			colNo,
+			_List_fromArray(
+				[4, 5, 6])) ? '0.00' : ((colNo === 16) ? '\"\"' : value));
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Upload$mapLine = function (str) {
@@ -5463,7 +5501,7 @@ var $author$project$Upload$update = F2(
 					_Utils_update(
 						model,
 						{
-							F: $author$project$Upload$downloadFileName(
+							z: $author$project$Upload$downloadFileName(
 								$elm$file$File$name(file))
 						}),
 					A2(
@@ -5476,19 +5514,58 @@ var $author$project$Upload$update = F2(
 					_Utils_update(
 						model,
 						{
-							E: $elm$core$Maybe$Just(
+							F: $elm$core$Maybe$Just(
 								$elm$core$String$lines(content))
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(
 					model,
-					A2($author$project$Upload$downloadCSV, model.E, model.F));
+					A2($author$project$Upload$downloadCSV, model.F, model.z));
 		}
 	});
 var $author$project$Upload$CsvDownload = {$: 3};
 var $author$project$Upload$CsvRequested = {$: 0};
 var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$html$Html$td = _VirtualDom_node('td');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Upload$csvCol = F2(
+	function (colNo, value) {
+		return A2(
+			$elm$core$List$member,
+			colNo,
+			_List_fromArray(
+				[0, 1, 4, 5, 6, 16])) ? A2(
+			$elm$html$Html$td,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'background-color', '#D6EEEE')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(value)
+				])) : A2(
+			$elm$html$Html$td,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text(value)
+				]));
+	});
+var $elm$html$Html$tr = _VirtualDom_node('tr');
+var $author$project$Upload$csvRow = function (row) {
+	var cols = A2(
+		$elm$core$String$split,
+		';',
+		$author$project$Upload$mapLine(row));
+	return A2(
+		$elm$html$Html$tr,
+		_List_Nil,
+		A2($elm$core$List$indexedMap, $author$project$Upload$csvCol, cols));
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
@@ -5507,13 +5584,9 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $elm$html$Html$p = _VirtualDom_node('p');
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$table = _VirtualDom_node('table');
 var $author$project$Upload$view = function (model) {
-	var _v0 = model.E;
+	var _v0 = model.F;
 	if (_v0.$ === 1) {
 		return A2(
 			$elm$html$Html$button,
@@ -5540,18 +5613,24 @@ var $author$project$Upload$view = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Download ' + model.F)
+							$elm$html$Html$text('Download ' + model.z)
 						])),
 					A2(
-					$elm$html$Html$p,
+					$elm$html$Html$table,
 					_List_fromArray(
 						[
-							A2($elm$html$Html$Attributes$style, 'white-space', 'pre')
+							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
+						]),
+					A2($elm$core$List$map, $author$project$Upload$csvRow, content)),
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Upload$CsvDownload)
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text(
-							$author$project$Upload$mapCSV(content))
+							$elm$html$Html$text('Download ' + model.z)
 						]))
 				]));
 	}
