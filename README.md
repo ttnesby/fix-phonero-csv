@@ -45,9 +45,7 @@ The downloaded file will be in `~/Downloads/FIXED-phonera.csv`
 
 # Netlify deployment
 
-The SPA is deployed on Netlify. The link is [here](https://fix-phonero-csv.netlify.app/)
-
-[SPA url](https://63a29fe53843462fd0da5ddd--phenomenal-babka-2ab4de.netlify.app/)
+The [SPA is deployed on Netlify](https://63a29fe53843462fd0da5ddd--phenomenal-babka-2ab4de.netlify.app/).
 
 ## Redirects
 
