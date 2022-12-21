@@ -4,7 +4,7 @@
 
 The repo contains an elm module that can be used to map the phonero csv files for compliance with expected CSV format of a given financial software.
 
-See `./src/Map.elm`
+See `./src/Upload.elm`
 
 ## Single Page Application (SPA)
 

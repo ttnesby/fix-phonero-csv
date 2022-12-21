@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Map</title>
+  <title>Upload</title>
   <style>body { padding: 0; margin: 0; }</style>
 </head>
 
@@ -5345,27 +5345,30 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Map$Model = F2(
+var $author$project$Upload$Model = F2(
 	function (csv, fName) {
 		return {E: csv, F: fName};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Map$init = function (_v0) {
+var $author$project$Upload$init = function (_v0) {
 	return _Utils_Tuple2(
-		A2($author$project$Map$Model, $elm$core$Maybe$Nothing, ''),
+		A2($author$project$Upload$Model, $elm$core$Maybe$Nothing, ''),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Map$subscriptions = function (_v0) {
+var $author$project$Upload$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Map$CsvLoaded = function (a) {
+var $author$project$Upload$CsvLoaded = function (a) {
 	return {$: 2, a: a};
 };
-var $author$project$Map$CsvSelected = function (a) {
+var $author$project$Upload$CsvSelected = function (a) {
 	return {$: 1, a: a};
+};
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
 };
 var $elm$core$Basics$negate = function (n) {
 	return -n;
@@ -5374,15 +5377,12 @@ var $elm$core$String$dropRight = F2(
 	function (n, string) {
 		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
 	});
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
-var $author$project$Map$mapValue = F2(
+var $author$project$Upload$mapValue = F2(
 	function (colNo, value) {
 		return ((!colNo) || (colNo === 1)) ? '0' : (((colNo === 4) || ((colNo === 5) || (colNo === 6))) ? '0.00' : ((colNo === 16) ? '\"\"' : value));
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$Map$mapLine = function (str) {
+var $author$project$Upload$mapLine = function (str) {
 	var split = A2($elm$core$String$split, ';', str);
 	return ($elm$core$List$length(split) === 1) ? '' : (($elm$core$List$length(split) !== 17) ? $elm$core$String$concat(
 		_List_fromArray(
@@ -5400,15 +5400,15 @@ var $author$project$Map$mapLine = function (str) {
 					return x + (';' + y);
 				}),
 			'',
-			A2($elm$core$List$indexedMap, $author$project$Map$mapValue, split))));
+			A2($elm$core$List$indexedMap, $author$project$Upload$mapValue, split))));
 };
-var $author$project$Map$mapCSV = function (csv) {
+var $author$project$Upload$mapCSV = function (csv) {
 	if (!csv.b) {
 		return '';
 	} else {
 		var h = csv.a;
 		var t = csv.b;
-		return $author$project$Map$mapLine(h) + ('\n' + $author$project$Map$mapCSV(t));
+		return $author$project$Upload$mapLine(h) + ('\n' + $author$project$Upload$mapCSV(t));
 	}
 };
 var $elm$time$Time$Posix = $elm$core$Basics$identity;
@@ -5420,20 +5420,22 @@ var $elm$file$File$Download$string = F3(
 			$elm$core$Basics$never,
 			A3(_File_download, name, mime, content));
 	});
-var $author$project$Map$downloadCSV = F2(
+var $author$project$Upload$downloadCSV = F2(
 	function (csv, fName) {
-		var dlName = A2($elm$core$String$dropRight, 4, fName) + '-FIXED.csv';
 		if (csv.$ === 1) {
 			return $elm$core$Platform$Cmd$none;
 		} else {
 			var content = csv.a;
 			return A3(
 				$elm$file$File$Download$string,
-				dlName,
+				fName,
 				'text/csv',
-				$author$project$Map$mapCSV(content));
+				$author$project$Upload$mapCSV(content));
 		}
 	});
+var $author$project$Upload$downloadFileName = function (fName) {
+	return A2($elm$core$String$dropRight, 4, fName) + '-FIXED.csv';
+};
 var $elm$file$File$Select$file = F2(
 	function (mimes, toMsg) {
 		return A2(
@@ -5444,7 +5446,7 @@ var $elm$file$File$Select$file = F2(
 var $elm$core$String$lines = _String_lines;
 var $elm$file$File$name = _File_name;
 var $elm$file$File$toString = _File_toString;
-var $author$project$Map$update = F2(
+var $author$project$Upload$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 0:
@@ -5454,18 +5456,19 @@ var $author$project$Map$update = F2(
 						$elm$file$File$Select$file,
 						_List_fromArray(
 							['text/csv']),
-						$author$project$Map$CsvSelected));
+						$author$project$Upload$CsvSelected));
 			case 1:
 				var file = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							F: $elm$file$File$name(file)
+							F: $author$project$Upload$downloadFileName(
+								$elm$file$File$name(file))
 						}),
 					A2(
 						$elm$core$Task$perform,
-						$author$project$Map$CsvLoaded,
+						$author$project$Upload$CsvLoaded,
 						$elm$file$File$toString(file)));
 			case 2:
 				var content = msg.a;
@@ -5480,11 +5483,11 @@ var $author$project$Map$update = F2(
 			default:
 				return _Utils_Tuple2(
 					model,
-					A2($author$project$Map$downloadCSV, model.E, model.F));
+					A2($author$project$Upload$downloadCSV, model.E, model.F));
 		}
 	});
-var $author$project$Map$CsvDownload = {$: 3};
-var $author$project$Map$CsvRequested = {$: 0};
+var $author$project$Upload$CsvDownload = {$: 3};
+var $author$project$Upload$CsvRequested = {$: 0};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -5509,14 +5512,14 @@ var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Map$view = function (model) {
+var $author$project$Upload$view = function (model) {
 	var _v0 = model.E;
 	if (_v0.$ === 1) {
 		return A2(
 			$elm$html$Html$button,
 			_List_fromArray(
 				[
-					$elm$html$Html$Events$onClick($author$project$Map$CsvRequested)
+					$elm$html$Html$Events$onClick($author$project$Upload$CsvRequested)
 				]),
 			_List_fromArray(
 				[
@@ -5533,11 +5536,11 @@ var $author$project$Map$view = function (model) {
 					$elm$html$Html$button,
 					_List_fromArray(
 						[
-							$elm$html$Html$Events$onClick($author$project$Map$CsvDownload)
+							$elm$html$Html$Events$onClick($author$project$Upload$CsvDownload)
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Download CSV')
+							$elm$html$Html$text('Download ' + model.F)
 						])),
 					A2(
 					$elm$html$Html$p,
@@ -5548,17 +5551,17 @@ var $author$project$Map$view = function (model) {
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Map$mapCSV(content))
+							$author$project$Upload$mapCSV(content))
 						]))
 				]));
 	}
 };
-var $author$project$Map$main = $elm$browser$Browser$element(
-	{av: $author$project$Map$init, aB: $author$project$Map$subscriptions, aD: $author$project$Map$update, aE: $author$project$Map$view});
-_Platform_export({'Map':{'init':$author$project$Map$main(
+var $author$project$Upload$main = $elm$browser$Browser$element(
+	{av: $author$project$Upload$init, aB: $author$project$Upload$subscriptions, aD: $author$project$Upload$update, aE: $author$project$Upload$view});
+_Platform_export({'Upload':{'init':$author$project$Upload$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
-  var app = Elm.Map.init({ node: document.getElementById("elm") });
+  var app = Elm.Upload.init({ node: document.getElementById("elm") });
 }
 catch (e)
 {

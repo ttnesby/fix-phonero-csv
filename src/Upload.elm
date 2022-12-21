@@ -1,4 +1,4 @@
-module Map exposing (..)
+module Upload exposing (..)
 
 -- https://github.com/elm/file/blob/master/README.md
 
@@ -59,17 +59,16 @@ mapCSV csv =
 
 downloadCSV : Maybe (List String) -> String -> Cmd Msg
 downloadCSV csv fName =
-    let
-        dlName = (String.dropRight 4 fName) ++ "-FIXED.csv"
-    in
     case csv of
         Nothing ->
             Cmd.none
 
         Just content ->
-            Download.string dlName "text/csv" (mapCSV content)
+            Download.string fName "text/csv" (mapCSV content)
 
-
+downloadFileName : String -> String
+downloadFileName fName =
+    (String.dropRight 4 fName) ++ "-FIXED.csv"
 
 -- MAIN
 
@@ -120,7 +119,7 @@ update msg model =
             )
 
         CsvSelected file ->
-            ( {model | fName = File.name file}
+            ( {model | fName = downloadFileName <| File.name file}
             , Task.perform CsvLoaded (File.toString file)
             )
 
@@ -147,7 +146,7 @@ view model =
 
         Just content ->
             div []
-                [ button [ onClick CsvDownload ] [ text "Download CSV" ]
+                [ button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
                 , p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
                 ]
 
