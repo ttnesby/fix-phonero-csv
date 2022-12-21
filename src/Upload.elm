@@ -4,8 +4,9 @@ module Upload exposing (..)
 
 import Browser
 import File exposing (File)
+import File.Download as Download
 import File.Select as Select
-import Html exposing (Html, button, p, text)
+import Html exposing (Html, button, div, p, text)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import String
@@ -33,7 +34,7 @@ mapLine str =
         split =
             String.split ";" str
     in
-    if List.length split == 1 then --
+    if List.length split == 1 then
         ""
 
     else if List.length split /= 17 then
@@ -43,7 +44,7 @@ mapLine str =
         split
             |> List.indexedMap mapValue
             |> List.foldr (\x y -> x ++ ";" ++ y) ""
-            |> (\x -> String.dropRight 1 x) -- remove last semicolon
+            |> (\x -> String.dropRight 1 x)
 
 
 mapCSV : List String -> String
@@ -54,6 +55,16 @@ mapCSV csv =
 
         h :: t ->
             (h |> mapLine) ++ "\n" ++ mapCSV t
+
+
+downloadCSV : Maybe (List String) -> Cmd Msg
+downloadCSV csv =
+    case csv of
+        Nothing ->
+            Cmd.none
+
+        Just content ->
+            Download.string "FIXED-phonera.csv" "text/csv" (mapCSV content)
 
 
 
@@ -92,6 +103,7 @@ type Msg
     = CsvRequested
     | CsvSelected File
     | CsvLoaded String
+    | CsvDownload
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -112,6 +124,11 @@ update msg model =
             , Cmd.none
             )
 
+        CsvDownload ->
+            ( model
+            , downloadCSV model.csv
+            )
+
 
 
 -- VIEW
@@ -124,7 +141,10 @@ view model =
             button [ onClick CsvRequested ] [ text "Load CSV" ]
 
         Just content ->
-            p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
+            div []
+                [ button [ onClick CsvDownload ] [ text "Download CSV" ]
+                , p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
+                ]
 
 
 

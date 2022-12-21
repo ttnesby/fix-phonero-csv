@@ -5366,50 +5366,6 @@ var $author$project$Upload$CsvLoaded = function (a) {
 var $author$project$Upload$CsvSelected = function (a) {
 	return {$: 1, a: a};
 };
-var $elm$time$Time$Posix = $elm$core$Basics$identity;
-var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
-var $elm$file$File$Select$file = F2(
-	function (mimes, toMsg) {
-		return A2(
-			$elm$core$Task$perform,
-			toMsg,
-			_File_uploadOne(mimes));
-	});
-var $elm$core$String$lines = _String_lines;
-var $elm$file$File$toString = _File_toString;
-var $author$project$Upload$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 0:
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$elm$file$File$Select$file,
-						_List_fromArray(
-							['text/csv']),
-						$author$project$Upload$CsvSelected));
-			case 1:
-				var file = msg.a;
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$elm$core$Task$perform,
-						$author$project$Upload$CsvLoaded,
-						$elm$file$File$toString(file)));
-			default:
-				var content = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							E: $elm$core$Maybe$Just(
-								$elm$core$String$lines(content))
-						}),
-					$elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$Upload$CsvRequested = {$: 0};
-var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
 };
@@ -5454,6 +5410,75 @@ var $author$project$Upload$mapCSV = function (csv) {
 		return $author$project$Upload$mapLine(h) + ('\n' + $author$project$Upload$mapCSV(t));
 	}
 };
+var $elm$time$Time$Posix = $elm$core$Basics$identity;
+var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
+var $elm$file$File$Download$string = F3(
+	function (name, mime, content) {
+		return A2(
+			$elm$core$Task$perform,
+			$elm$core$Basics$never,
+			A3(_File_download, name, mime, content));
+	});
+var $author$project$Upload$downloadCSV = function (csv) {
+	if (csv.$ === 1) {
+		return $elm$core$Platform$Cmd$none;
+	} else {
+		var content = csv.a;
+		return A3(
+			$elm$file$File$Download$string,
+			'FIXED-phonera.csv',
+			'text/csv',
+			$author$project$Upload$mapCSV(content));
+	}
+};
+var $elm$file$File$Select$file = F2(
+	function (mimes, toMsg) {
+		return A2(
+			$elm$core$Task$perform,
+			toMsg,
+			_File_uploadOne(mimes));
+	});
+var $elm$core$String$lines = _String_lines;
+var $elm$file$File$toString = _File_toString;
+var $author$project$Upload$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 0:
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$elm$file$File$Select$file,
+						_List_fromArray(
+							['text/csv']),
+						$author$project$Upload$CsvSelected));
+			case 1:
+				var file = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$elm$core$Task$perform,
+						$author$project$Upload$CsvLoaded,
+						$elm$file$File$toString(file)));
+			case 2:
+				var content = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							E: $elm$core$Maybe$Just(
+								$elm$core$String$lines(content))
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					model,
+					$author$project$Upload$downloadCSV(model.E));
+		}
+	});
+var $author$project$Upload$CsvDownload = {$: 3};
+var $author$project$Upload$CsvRequested = {$: 0};
+var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
 };
@@ -5492,15 +5517,31 @@ var $author$project$Upload$view = function (model) {
 	} else {
 		var content = _v0.a;
 		return A2(
-			$elm$html$Html$p,
+			$elm$html$Html$div,
+			_List_Nil,
 			_List_fromArray(
 				[
-					A2($elm$html$Html$Attributes$style, 'white-space', 'pre')
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(
-					$author$project$Upload$mapCSV(content))
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Upload$CsvDownload)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Download CSV')
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'white-space', 'pre')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Upload$mapCSV(content))
+						]))
 				]));
 	}
 };
