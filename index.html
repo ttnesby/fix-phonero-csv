@@ -5526,6 +5526,7 @@ var $author$project$Upload$update = F2(
 	});
 var $author$project$Upload$CsvDownload = {$: 3};
 var $author$project$Upload$CsvRequested = {$: 0};
+var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
@@ -5567,6 +5568,27 @@ var $author$project$Upload$csvRow = function (row) {
 		A2($elm$core$List$indexedMap, $author$project$Upload$csvCol, cols));
 };
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$Attributes$height = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'height',
+		$elm$core$String$fromInt(n));
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
 };
@@ -5584,19 +5606,84 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
 var $elm$html$Html$table = _VirtualDom_node('table');
+var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
+var $elm$html$Html$Attributes$width = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'width',
+		$elm$core$String$fromInt(n));
+};
 var $author$project$Upload$view = function (model) {
 	var _v0 = model.F;
 	if (_v0.$ === 1) {
 		return A2(
-			$elm$html$Html$button,
+			$elm$html$Html$div,
+			_List_Nil,
 			_List_fromArray(
 				[
-					$elm$html$Html$Events$onClick($author$project$Upload$CsvRequested)
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('Load CSV')
+					A2(
+					$elm$html$Html$table,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'border-spacing', '5px')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$tr,
+							_List_Nil,
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$td,
+									_List_Nil,
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$a,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$target('_blank'),
+													$elm$html$Html$Attributes$href('https://github.com/ttnesby/fix-phonero-csv')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$img,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$src('./media/github-mark.png'),
+															$elm$html$Html$Attributes$width(25),
+															$elm$html$Html$Attributes$height(25)
+														]),
+													_List_Nil)
+												]))
+										])),
+									A2(
+									$elm$html$Html$td,
+									_List_Nil,
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$button,
+											_List_fromArray(
+												[
+													$elm$html$Html$Events$onClick($author$project$Upload$CsvRequested)
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Load CSV')
+												]))
+										]))
+								]))
+						]))
 				]));
 	} else {
 		var content = _v0.a;

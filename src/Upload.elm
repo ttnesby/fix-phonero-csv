@@ -6,8 +6,8 @@ import Browser
 import File exposing (File)
 import File.Download as Download
 import File.Select as Select
-import Html exposing (Html, button, div, table, td, text, tr)
-import Html.Attributes exposing (style)
+import Html exposing (Html, a, button, div, img, table, td, text, tr)
+import Html.Attributes exposing (height, href, src, style, target, width)
 import Html.Events exposing (onClick)
 import String
 import Task
@@ -167,7 +167,20 @@ view : Model -> Html Msg
 view model =
     case model.csv of
         Nothing ->
-            button [ onClick CsvRequested ] [ text "Load CSV" ]
+            div []
+                [ table [ style "border-spacing" "5px" ]
+                    [ tr []
+                        [ td []
+                            [ a [ target "_blank", href "https://github.com/ttnesby/fix-phonero-csv" ]
+                                [ img [ src "./media/github-mark.png", width 25, height 25 ] []
+                                ]
+                            ]
+                        , td []
+                            [ button [ onClick CsvRequested ] [ text "Load CSV" ]
+                            ]
+                        ]
+                    ]
+                ]
 
         Just content ->
             div []
