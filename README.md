@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/76e82e8c-5eba-4cd0-bfab-a84b638a3b3c/deploy-status)](https://app.netlify.com/sites/phenomenal-babka-2ab4de/deploys)
+
 # fix-phonero-csv
 
 The repo contains an elm module that can be used to map the phonero csv files for compliance with expected CSV format of a given financial software.
@@ -40,6 +42,19 @@ elm make ./src/Map.elm --optimize
 ## Download file
 
 The downloaded file will be in `~/Downloads/FIXED-phonera.csv`
+
+# Netlify deployment
+
+The SPA is deployed on Netlify. The link is [here](https://fix-phonero-csv.netlify.app/)
+
+[SPA url](https://63a29fe53843462fd0da5ddd--phenomenal-babka-2ab4de.netlify.app/)
+
+## Redirects
+
+One last things that you'll need to set up is the redirects for SPA. Since all the routing is done by the client side, the server needs to redirect to the root for every request.
+Which means all the path needs to be redirected to index.html.
+
+See `./netlify.toml`
 
 
 
