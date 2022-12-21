@@ -57,14 +57,17 @@ mapCSV csv =
             (h |> mapLine) ++ "\n" ++ mapCSV t
 
 
-downloadCSV : Maybe (List String) -> Cmd Msg
-downloadCSV csv =
+downloadCSV : Maybe (List String) -> String -> Cmd Msg
+downloadCSV csv fName =
+    let
+        dlName = (String.dropRight 4 fName) ++ "-FIXED.csv"
+    in
     case csv of
         Nothing ->
             Cmd.none
 
         Just content ->
-            Download.string "FIXED-phonera.csv" "text/csv" (mapCSV content)
+            Download.string dlName "text/csv" (mapCSV content)
 
 
 
@@ -86,13 +89,15 @@ main =
 
 
 type alias Model =
-    { csv : Maybe (List String)
+    { 
+        csv : Maybe (List String)
+        , fName : String
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model Nothing, Cmd.none )
+    ( Model Nothing "", Cmd.none )
 
 
 
@@ -115,7 +120,7 @@ update msg model =
             )
 
         CsvSelected file ->
-            ( model
+            ( {model | fName = File.name file}
             , Task.perform CsvLoaded (File.toString file)
             )
 
@@ -126,7 +131,7 @@ update msg model =
 
         CsvDownload ->
             ( model
-            , downloadCSV model.csv
+            , downloadCSV model.csv model.fName
             )
 
 

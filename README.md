@@ -41,7 +41,7 @@ elm make ./src/Map.elm --optimize
 
 ## Download file
 
-The downloaded file will be in `~/Downloads/FIXED-phonera.csv`
+The downloaded file will be in `~/Downloads/<selected filename>-FIXED.csv`
 
 # Netlify deployment
 
