@@ -5375,6 +5375,7 @@ var $elm$file$File$Select$file = F2(
 			toMsg,
 			_File_uploadOne(mimes));
 	});
+var $elm$core$String$lines = _String_lines;
 var $elm$file$File$toString = _File_toString;
 var $author$project$Upload$update = F2(
 	function (msg, model) {
@@ -5401,13 +5402,58 @@ var $author$project$Upload$update = F2(
 					_Utils_update(
 						model,
 						{
-							E: $elm$core$Maybe$Just(content)
+							E: $elm$core$Maybe$Just(
+								$elm$core$String$lines(content))
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Upload$CsvRequested = {$: 0};
 var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$String$dropRight = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
+	});
+var $author$project$Upload$mapValue = F2(
+	function (colNo, value) {
+		return ((!colNo) || (colNo === 1)) ? '0' : (((colNo === 4) || ((colNo === 5) || (colNo === 6))) ? '0.00' : ((colNo === 16) ? '\"\"' : value));
+	});
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$Upload$mapLine = function (str) {
+	var split = A2($elm$core$String$split, ';', str);
+	return ($elm$core$List$length(split) === 1) ? '' : (($elm$core$List$length(split) !== 17) ? $elm$core$String$concat(
+		_List_fromArray(
+			[
+				$elm$core$String$fromInt(
+				$elm$core$List$length(split)),
+				' columns, expected 17'
+			])) : function (x) {
+		return A2($elm$core$String$dropRight, 1, x);
+	}(
+		A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, y) {
+					return x + (';' + y);
+				}),
+			'',
+			A2($elm$core$List$indexedMap, $author$project$Upload$mapValue, split))));
+};
+var $author$project$Upload$mapCSV = function (csv) {
+	if (!csv.b) {
+		return '';
+	} else {
+		var h = csv.a;
+		var t = csv.b;
+		return $author$project$Upload$mapLine(h) + ('\n' + $author$project$Upload$mapCSV(t));
+	}
+};
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
 };
@@ -5453,7 +5499,8 @@ var $author$project$Upload$view = function (model) {
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(content)
+					$elm$html$Html$text(
+					$author$project$Upload$mapCSV(content))
 				]));
 	}
 };
