@@ -6,7 +6,7 @@ import Browser
 import File exposing (File)
 import File.Download as Download
 import File.Select as Select
-import Html exposing (Html, a, button, div, img, table, td, text, tr)
+import Html exposing (Html, a, button, div, img, table, td, text, tr, p)
 import Html.Attributes exposing (height, href, src, style, target, width)
 import Html.Events exposing (onClick)
 import String
@@ -189,27 +189,14 @@ view model =
                 Ok mappedCSV ->
                     div []
                         [ button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
-
-                        --, p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
                         , table [ style "border-spacing" "10px" ]
                             (List.map csvRow mappedCSV)
                         , button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
                         ]
 
-                _ ->
+                Err msg ->
                     div []
-                        [ table [ style "border-spacing" "5px" ]
-                            [ tr []
-                                [ td []
-                                    [ a [ target "_blank", href "https://github.com/ttnesby/fix-phonero-csv" ]
-                                        [ img [ src "./media/github-mark.png", width 25, height 25 ] []
-                                        ]
-                                    ]
-                                , td []
-                                    [ button [ onClick CsvRequested ] [ text "Load CSV" ]
-                                    ]
-                                ]
-                            ]
+                        [ p [ style "white-space" "pre" ] [ text msg ]
                         ]
 
 
