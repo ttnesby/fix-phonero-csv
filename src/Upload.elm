@@ -28,12 +28,11 @@ csvCol colNo value =
 
 csvRow : String -> Html Msg
 csvRow row =
-    let
-        cols =
-            row |> mapLine |> String.split ";"
-    in
     tr []
-        (List.indexedMap csvCol cols)
+        (row
+            |> String.split ";"
+            |> List.indexedMap csvCol
+        )
 
 
 mapValue : Int -> String -> String
@@ -51,43 +50,46 @@ mapValue colNo value =
         value
 
 
-mapLine : String -> String
+mapLine : String -> Result String String
 mapLine str =
-    let
-        split =
-            String.split ";" str
-    in
-    if List.length split == 1 then
-        ""
+    str
+        |> String.split ";"
+        |> (\cols ->
+                case List.length cols of
+                    17 ->
+                        cols
+                            |> List.indexedMap mapValue
+                            |> String.join ";"
+                            |> Ok
 
-    else if List.length split /= 17 then
-        String.concat [ String.fromInt <| List.length split, " columns, expected 17" ]
-
-    else
-        split
-            |> List.indexedMap mapValue
-            |> List.foldr (\x y -> x ++ ";" ++ y) ""
-            |> (\x -> String.dropRight 1 x)
+                    x ->
+                        [ String.fromInt <| x, " columns, expected 17" ]
+                            |> String.concat
+                            |> Err
+           )
 
 
-mapCSV : List String -> String
+gatherResults : List (Result String String) -> Result String (List String)
+gatherResults mappedLines =
+    mappedLines
+        |> List.filterMap Result.toMaybe
+        |> (\lines ->
+                if List.length lines == List.length mappedLines then
+                    lines |> Ok
+
+                else
+                    "CSV mapping failed!" |> Err
+           )
+
+
+mapCSV : List String -> Result String (List String)
 mapCSV csv =
-    case csv of
-        [] ->
-            ""
-
-        h :: t ->
-            (h |> mapLine) ++ "\n" ++ mapCSV t
+    csv |> List.map mapLine |> gatherResults
 
 
-downloadCSV : Maybe (List String) -> String -> Cmd Msg
+downloadCSV : List String -> String -> Cmd Msg
 downloadCSV csv fName =
-    case csv of
-        Nothing ->
-            Cmd.none
-
-        Just content ->
-            Download.string fName "text/csv" (mapCSV content)
+    Download.string fName "text/csv" (String.join "\n" csv)
 
 
 downloadFileName : String -> String
@@ -114,7 +116,7 @@ main =
 
 
 type alias Model =
-    { csv : Maybe (List String)
+    { csv : Maybe (Result String (List String))
     , fName : String
     }
 
@@ -149,13 +151,13 @@ update msg model =
             )
 
         CsvLoaded content ->
-            ( { model | csv = Just <| String.lines <| content }
+            ( { model | csv = Just <| mapCSV <| String.lines <| content }
             , Cmd.none
             )
 
         CsvDownload ->
             ( model
-            , downloadCSV model.csv model.fName
+            , downloadCSV (model.csv |> Maybe.withDefault (Ok [ "" ]) |> Result.withDefault [ "" ]) model.fName
             )
 
 
@@ -183,14 +185,32 @@ view model =
                 ]
 
         Just content ->
-            div []
-                [ button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
+            case content of
+                Ok mappedCSV ->
+                    div []
+                        [ button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
 
-                --, p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
-                , table [ style "border-spacing" "10px" ]
-                    (List.map csvRow content)
-                , button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
-                ]
+                        --, p [ style "white-space" "pre" ] [ text <| mapCSV <| content ]
+                        , table [ style "border-spacing" "10px" ]
+                            (List.map csvRow mappedCSV)
+                        , button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
+                        ]
+
+                _ ->
+                    div []
+                        [ table [ style "border-spacing" "5px" ]
+                            [ tr []
+                                [ td []
+                                    [ a [ target "_blank", href "https://github.com/ttnesby/fix-phonero-csv" ]
+                                        [ img [ src "./media/github-mark.png", width 25, height 25 ] []
+                                        ]
+                                    ]
+                                , td []
+                                    [ button [ onClick CsvRequested ] [ text "Load CSV" ]
+                                    ]
+                                ]
+                            ]
+                        ]
 
 
 
