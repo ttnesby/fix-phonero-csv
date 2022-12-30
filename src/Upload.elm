@@ -11,6 +11,7 @@ import Html.Attributes exposing (height, href, src, style, target, width)
 import Html.Events exposing (onClick)
 import String
 import Task
+import Csv exposing(mapCSV)  
 
 
 
@@ -33,58 +34,6 @@ csvRow row =
             |> String.split ";"
             |> List.indexedMap csvCol
         )
-
-
-mapValue : Int -> String -> String
-mapValue colNo value =
-    if List.member colNo [ 0, 1 ] then
-        "0"
-
-    else if List.member colNo [ 4, 5, 6 ] then
-        "0.00"
-
-    else if colNo == 16 then
-        "\"\""
-
-    else
-        value
-
-
-mapLine : String -> Result String String
-mapLine str =
-    str
-        |> String.split ";"
-        |> (\cols ->
-                case List.length cols of
-                    17 ->
-                        cols
-                            |> List.indexedMap mapValue
-                            |> String.join ";"
-                            |> Ok
-
-                    x ->
-                        [ String.fromInt <| x, " columns, expected 17" ]
-                            |> String.concat
-                            |> Err
-           )
-
-
-gatherResults : List (Result String String) -> Result String (List String)
-gatherResults mappedLines =
-    mappedLines
-        |> List.filterMap Result.toMaybe
-        |> (\lines ->
-                if List.length lines == List.length mappedLines then
-                    lines |> Ok
-
-                else
-                    "CSV mapping failed!" |> Err
-           )
-
-
-mapCSV : List String -> Result String (List String)
-mapCSV csv =
-    csv |> List.map mapLine |> gatherResults
 
 
 downloadCSV : List String -> String -> Cmd Msg
@@ -151,7 +100,7 @@ update msg model =
             )
 
         CsvLoaded content ->
-            ( { model | csv = Just <| mapCSV <| String.lines <| content }
+            ( { model | csv = Just <| Csv.map <| String.lines <| content }
             , Cmd.none
             )
 
