@@ -82,7 +82,3 @@ mapLine lineNo str =
 map : List String -> List (Result String (List String))
 map csv =
     csv |> List.indexedMap mapLine
-
-
-
--- |> gatherResults
