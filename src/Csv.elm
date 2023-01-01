@@ -37,7 +37,7 @@ mapLineErr reqCols lineNo actCol =
     , String.fromInt (lineNo + 1)
     , ", found "
     , String.fromInt actCol
-    , " columns, expected "
+    , " column(s), expected "
     , String.fromInt reqCols
     ]
         |> String.concat
@@ -66,19 +66,8 @@ mapLine lineNo str =
            )
 
 
-
--- gatherResults : List (Result String (List String)) -> Result String (List (List String))
--- gatherResults mappedLines =
---     mappedLines
---         |> List.filterMap Result.toMaybe
---         |> (\lines ->
---                 if List.length lines == List.length mappedLines then
---                     lines |> Ok
---                 else
---                     "CSV mapping failed!" |> Err
---            )
-
-
 map : List String -> List (Result String (List String))
 map csv =
-    csv |> List.indexedMap mapLine
+    csv
+        |> List.filterMap (\s -> if String.isEmpty s then Nothing else Just s)
+        |> List.indexedMap mapLine
