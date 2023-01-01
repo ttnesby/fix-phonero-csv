@@ -35,7 +35,7 @@ csvRow row =
                 List.indexedMap csvCol columns
 
             Err msg ->
-                List.indexedMap csvCol [ msg ]
+                List.indexedMap csvCol (List.append (List.repeat (requiredColumns - 1) "") [ msg ])
         )
 
 

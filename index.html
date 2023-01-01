@@ -5402,6 +5402,24 @@ var $elm$file$File$Select$file = F2(
 			_File_uploadOne(mimes));
 	});
 var $elm$core$String$lines = _String_lines;
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (!_v0.$) {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
+	});
 var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
 };
@@ -5414,7 +5432,7 @@ var $author$project$Csv$mapLineErr = F3(
 					$elm$core$String$fromInt(lineNo + 1),
 					', found ',
 					$elm$core$String$fromInt(actCol),
-					' columns, expected ',
+					' column(s), expected ',
 					$elm$core$String$fromInt(reqCols)
 				]));
 	});
@@ -5481,7 +5499,15 @@ var $author$project$Csv$mapLine = F2(
 			$author$project$Csv$split(str));
 	});
 var $author$project$Csv$map = function (csv) {
-	return A2($elm$core$List$indexedMap, $author$project$Csv$mapLine, csv);
+	return A2(
+		$elm$core$List$indexedMap,
+		$author$project$Csv$mapLine,
+		A2(
+			$elm$core$List$filterMap,
+			function (s) {
+				return $elm$core$String$isEmpty(s) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(s);
+			},
+			csv));
 };
 var $elm$file$File$name = _File_name;
 var $elm$file$File$toString = _File_toString;
@@ -5534,6 +5560,14 @@ var $author$project$Upload$CsvDownload = {$: 3};
 var $author$project$Upload$CsvRequested = {$: 0};
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$td = _VirtualDom_node('td');
@@ -5562,6 +5596,27 @@ var $author$project$Upload$csvCol = F2(
 					$elm$html$Html$text(value)
 				]));
 	});
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
 var $elm$html$Html$tr = _VirtualDom_node('tr');
 var $author$project$Upload$csvRow = function (row) {
 	return A2(
@@ -5576,8 +5631,11 @@ var $author$project$Upload$csvRow = function (row) {
 				return A2(
 					$elm$core$List$indexedMap,
 					$author$project$Upload$csvCol,
-					_List_fromArray(
-						[msg]));
+					A2(
+						$elm$core$List$append,
+						A2($elm$core$List$repeat, $author$project$Csv$requiredColumns - 1, ''),
+						_List_fromArray(
+							[msg])));
 			}
 		}());
 };
