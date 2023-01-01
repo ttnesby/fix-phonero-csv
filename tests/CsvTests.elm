@@ -15,6 +15,55 @@ mapV cols str =
         |> Set.fromList
 
 
+
+-- required- + 1 column corresponds to `requiredColumns` no of semicolons
+
+
+colGTRequired : String
+colGTRequired =
+    String.repeat requiredColumns splitStr
+
+
+
+-- requiredColumns corresponds to `requiredColumns` - 1 no of semicolons
+
+
+colRequired : String
+colRequired =
+    String.repeat (requiredColumns - 1) splitStr
+
+
+colReqMapped : List String
+colReqMapped =
+    [ "0"
+    , "0"
+    , ""
+    , ""
+    , "0.00"
+    , "0.00"
+    , "0.00"
+    , ""
+    , ""
+    , ""
+    , ""
+    , ""
+    , ""
+    , ""
+    , ""
+    , ""
+    , "\"\""
+    ]
+
+
+
+-- required- - 1 column ...
+
+
+colLTRequired : String
+colLTRequired =
+    String.repeat (requiredColumns - 2) splitStr
+
+
 csv : Test
 csv =
     describe "Test Csv module"
@@ -45,93 +94,54 @@ csv =
                 )
             ]
         , describe "mapLine"
-            [
-                test " 18 columns"
-                    (\_ ->
-                    ";;;;;;;;;;;;;;;;;"
-                        |> Csv.mapLine
-                        |> Expect.equal (Err "18 columns, expected 17")
-                    )
-                ,test " 16 columns"
-                    (\_ ->
-                    ";;;;;;;;;;;;;;;"
-                        |> Csv.mapLine
-                        |> Expect.equal (Err "16 columns, expected 17")
-                    )
-                ,test " 17 columns"
-                    (\_ ->
-                    ";;;;;;;;;;;;;;;;"
-                        |> Csv.mapLine
-                        |> Expect.equal (
-                            Ok [
-                                "0"
-                                ,"0"
-                                ,""
-                                ,""
-                                ,"0.00"
-                                ,"0.00"
-                                ,"0.00"
-                                ,""
-                                ,""
-                                ,""
-                                ,""
-                                ,""
-                                ,""
-                                ,""
-                                ,""
-                                ,""
-                                ,"\"\""
-                            ]
-                        )
-                    )
+            [ test "Required + 1 column"
+                (\_ ->
+                    colGTRequired
+                        |> Csv.mapLine 0
+                        |> Expect.equal (Err <| invalidNoOfColumns 0 <| requiredColumns + 1)
+                )
+            , test " Required - 1 column"
+                (\_ ->
+                    colLTRequired
+                        |> Csv.mapLine 0
+                        |> Expect.equal (Err <| invalidNoOfColumns 0 <| requiredColumns - 1)
+                )
+            , test " Required columns"
+                (\_ ->
+                    colRequired
+                        |> Csv.mapLine 0
+                        |> Expect.equal (Ok colReqMapped)
+                )
             ]
         , describe "map"
-            [
-                test " 1 line, 18 columns"
-                    (\_ ->
-                    [";;;;;;;;;;;;;;;;;"]
+            [ test " 1 line, required + 1 column"
+                (\_ ->
+                    [ colGTRequired ]
                         |> Csv.map
-                        |> Expect.equal (Err "CSV mapping failed!")
-                    )
-                ,test " 1 line, 16 columns"
-                    (\_ ->
-                    [";;;;;;;;;;;;;;;"]
+                        |> Expect.equal (List.singleton <| Err <| invalidNoOfColumns 0 (requiredColumns + 1))
+                )
+            , test " 1 line, required - 1 column"
+                (\_ ->
+                    [ colLTRequired ]
                         |> Csv.map
-                        |> Expect.equal (Err "CSV mapping failed!")
-                    )
-                ,test " 1 line, 17 columns"
-                    (\_ ->
-                    [";;;;;;;;;;;;;;;;"]
+                        |> Expect.equal (List.singleton <| Err <| invalidNoOfColumns 0 (requiredColumns - 1))
+                )
+            , test " 1 line, required columns"
+                (\_ ->
+                    [ colRequired ]
                         |> Csv.map
-                        |> Expect.equal (
-                            Ok [
-                                [
-                                    "0"
-                                    ,"0"
-                                    ,""
-                                    ,""
-                                    ,"0.00"
-                                    ,"0.00"
-                                    ,"0.00"
-                                    ,""
-                                    ,""
-                                    ,""
-                                    ,""
-                                    ,""
-                                    ,""
-                                    ,""
-                                    ,""
-                                    ,""
-                                    ,"\"\""
-                                ]
+                        |> Expect.equal (List.singleton <| Ok colReqMapped)
+                )
+            , test " 3 lines, 1st required + 1 column, 2nd required, 3rd required - 1 column"
+                (\_ ->
+                    [ colGTRequired, colRequired, colLTRequired ]
+                        |> Csv.map
+                        |> Expect.equal
+                            [ 
+                                Err <| invalidNoOfColumns 0 (requiredColumns + 1)  
+                                ,Ok colReqMapped
+                                ,Err <| invalidNoOfColumns 2 (requiredColumns - 1)
                             ]
-                        )
-                    )
-                ,test " 2 lines, 1st 17, 2nd 16 columns"
-                    (\_ ->
-                    [";;;;;;;;;;;;;;;;",";;;;;;;;;;;;;;;"]
-                        |> Csv.map
-                        |> Expect.equal (Err "CSV mapping failed!")
-                    )                                        
+                )
             ]
         ]
