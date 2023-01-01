@@ -5384,16 +5384,6 @@ var $author$project$Upload$downloadCSV = F2(
 			'text/csv',
 			A2($elm$core$String$join, '\n', csv));
 	});
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $elm$core$String$dropRight = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
-	});
-var $author$project$Upload$downloadFileName = function (fName) {
-	return A2($elm$core$String$dropRight, 4, fName) + '-FIXED.csv';
-};
 var $elm$file$File$Select$file = F2(
 	function (mimes, toMsg) {
 		return A2(
@@ -5402,24 +5392,6 @@ var $elm$file$File$Select$file = F2(
 			_File_uploadOne(mimes));
 	});
 var $elm$core$String$lines = _String_lines;
-var $elm$core$List$maybeCons = F3(
-	function (f, mx, xs) {
-		var _v0 = f(mx);
-		if (!_v0.$) {
-			var x = _v0.a;
-			return A2($elm$core$List$cons, x, xs);
-		} else {
-			return xs;
-		}
-	});
-var $elm$core$List$filterMap = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			$elm$core$List$maybeCons(f),
-			_List_Nil,
-			xs);
-	});
 var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
 };
@@ -5499,15 +5471,7 @@ var $author$project$Csv$mapLine = F2(
 			$author$project$Csv$split(str));
 	});
 var $author$project$Csv$map = function (csv) {
-	return A2(
-		$elm$core$List$indexedMap,
-		$author$project$Csv$mapLine,
-		A2(
-			$elm$core$List$filterMap,
-			function (s) {
-				return $elm$core$String$isEmpty(s) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(s);
-			},
-			csv));
+	return A2($elm$core$List$indexedMap, $author$project$Csv$mapLine, csv);
 };
 var $elm$file$File$name = _File_name;
 var $elm$file$File$toString = _File_toString;
@@ -5528,8 +5492,7 @@ var $author$project$Upload$update = F2(
 					_Utils_update(
 						model,
 						{
-							Z: $author$project$Upload$downloadFileName(
-								$elm$file$File$name(file))
+							Z: $elm$file$File$name(file)
 						}),
 					A2(
 						$elm$core$Task$perform,
@@ -5640,6 +5603,17 @@ var $author$project$Upload$csvRow = function (row) {
 		}());
 };
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$String$dropRight = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
+	});
+var $author$project$Upload$downloadFileName = F2(
+	function (fName, postfix) {
+		return A2($elm$core$String$dropRight, 4, fName) + ('-' + (postfix + '.csv'));
+	});
 var $elm$html$Html$Attributes$height = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -5759,6 +5733,14 @@ var $author$project$Upload$view = function (model) {
 				]));
 	} else {
 		var content = _v0.a;
+		var isErr = function (r) {
+			if (r.$ === 1) {
+				return true;
+			} else {
+				return false;
+			}
+		};
+		var dlFileName = A2($elm$core$List$any, isErr, content) ? A2($author$project$Upload$downloadFileName, model.Z, 'ERROR') : A2($author$project$Upload$downloadFileName, model.Z, 'FIXED');
 		return A2(
 			$elm$html$Html$div,
 			_List_Nil,
@@ -5772,7 +5754,7 @@ var $author$project$Upload$view = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Download ' + model.Z)
+							$elm$html$Html$text('Download ' + dlFileName)
 						])),
 					A2(
 					$elm$html$Html$table,
@@ -5789,7 +5771,7 @@ var $author$project$Upload$view = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Download ' + model.Z)
+							$elm$html$Html$text('Download ' + dlFileName)
 						]))
 				]));
 	}

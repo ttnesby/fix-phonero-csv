@@ -44,9 +44,22 @@ downloadCSV csv fName =
     Download.string fName "text/csv" (String.join "\n" csv)
 
 
-downloadFileName : String -> String
-downloadFileName fName =
-    String.dropRight 4 fName ++ "-FIXED.csv"
+downloadFileName : String -> List (Result String (List String)) -> String
+downloadFileName fName content =
+
+    let
+        hasErr : Result String (List String) -> Bool
+        hasErr r =
+            case r of
+                Err _ ->
+                    True
+
+                _ ->
+                    False
+
+        postfix = if List.any hasErr content then "ERROR" else "FIXED"
+    in
+        String.dropRight 4 fName ++ "-" ++ postfix ++ ".csv"
 
 
 
@@ -98,7 +111,7 @@ update msg model =
             )
 
         CsvSelected file ->
-            ( { model | fName = downloadFileName <| File.name file }
+            ( { model | fName = File.name file }
             , Task.perform CsvLoaded (File.toString file)
             )
 
@@ -109,7 +122,9 @@ update msg model =
 
         CsvDownload ->
             ( model
-            , downloadCSV [ "testing" ] model.fName
+            , case model.csv of
+                Just content -> downloadCSV [ "testing" ] (downloadFileName model.fName content)
+                Nothing -> Cmd.none
             )
 
 
@@ -138,10 +153,9 @@ view model =
 
         Just content ->
             div []
-                [ button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
-                , table [ style "border-spacing" "10px" ]
-                    (List.map csvRow content)
-                , button [ onClick CsvDownload ] [ text <| "Download " ++ model.fName ]
+                [ button [ onClick CsvDownload ] [ text <| "Download " ++ (downloadFileName model.fName content) ]
+                , table [ style "border-spacing" "10px" ] (List.map csvRow content)
+                , button [ onClick CsvDownload ] [ text <| "Download " ++ (downloadFileName model.fName content) ]
                 ]
 
 
