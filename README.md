@@ -9,8 +9,8 @@ See `./src/FixCsv.elm`
 ## Single Page Application (SPA)
 
 The logic of the SPA is
-1. A button for uploading and re-mapping a csv file
-2. The re-mapping of certain columns has one of two outcomes
+1. A button for uploading a csv file and automatic re-mapping 
+2. The re-mapping has one of two outcomes
 3. `Success` - the mapped content is displayed as table with mapped columns highlighted
 4. `Errors` - the error messages are displayed as table
 5. In both outcomes, the new csv content or error messages can be downloaded
@@ -81,8 +81,3 @@ One last things that you'll need to set up is the redirects for SPA. Since all t
 Which means all the path needs to be redirected to index.html.
 
 See `./netlify.toml`
-
-
-
-
-
