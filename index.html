@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Upload</title>
+  <title>FixCsv</title>
   <style>body { padding: 0; margin: 0; }</style>
 </head>
 
@@ -5345,26 +5345,26 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Upload$Model = F2(
+var $author$project$FixCsv$Model = F2(
 	function (csv, fName) {
 		return {an: csv, ag: fName};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Upload$init = function (_v0) {
+var $author$project$FixCsv$init = function (_v0) {
 	return _Utils_Tuple2(
-		A2($author$project$Upload$Model, $elm$core$Maybe$Nothing, ''),
+		A2($author$project$FixCsv$Model, $elm$core$Maybe$Nothing, ''),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Upload$subscriptions = function (_v0) {
+var $author$project$FixCsv$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Upload$CsvSelected = function (a) {
+var $author$project$FixCsv$CsvSelected = function (a) {
 	return {$: 1, a: a};
 };
-var $author$project$Upload$CsvUpLoaded = function (a) {
+var $author$project$FixCsv$CsvUpLoaded = function (a) {
 	return {$: 2, a: a};
 };
 var $elm$time$Time$Posix = $elm$core$Basics$identity;
@@ -5376,7 +5376,7 @@ var $elm$file$File$Download$string = F3(
 			$elm$core$Basics$never,
 			A3(_File_download, name, mime, content));
 	});
-var $author$project$Upload$downloadFile = F3(
+var $author$project$FixCsv$downloadFile = F3(
 	function (fName, mime, text) {
 		return A3($elm$file$File$Download$string, fName, mime, text);
 	});
@@ -5539,7 +5539,7 @@ var $author$project$Csv$map = function (csv) {
 };
 var $elm$file$File$name = _File_name;
 var $elm$file$File$toString = _File_toString;
-var $author$project$Upload$update = F2(
+var $author$project$FixCsv$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 0:
@@ -5549,7 +5549,7 @@ var $author$project$Upload$update = F2(
 						$elm$file$File$Select$file,
 						_List_fromArray(
 							['text/csv']),
-						$author$project$Upload$CsvSelected));
+						$author$project$FixCsv$CsvSelected));
 			case 1:
 				var file = msg.a;
 				return _Utils_Tuple2(
@@ -5560,7 +5560,7 @@ var $author$project$Upload$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						$author$project$Upload$CsvUpLoaded,
+						$author$project$FixCsv$CsvUpLoaded,
 						$elm$file$File$toString(file)));
 			case 2:
 				var content = msg.a;
@@ -5578,11 +5578,11 @@ var $author$project$Upload$update = F2(
 				var mime = msg.b;
 				var text = msg.c;
 				return _Utils_Tuple2(
-					A2($author$project$Upload$Model, $elm$core$Maybe$Nothing, ''),
-					A3($author$project$Upload$downloadFile, fname, mime, text));
+					A2($author$project$FixCsv$Model, $elm$core$Maybe$Nothing, ''),
+					A3($author$project$FixCsv$downloadFile, fname, mime, text));
 		}
 	});
-var $author$project$Upload$FileDownload = F3(
+var $author$project$FixCsv$FileDownload = F3(
 	function (a, b, c) {
 		return {$: 3, a: a, b: b, c: c};
 	});
@@ -5591,7 +5591,7 @@ var $elm$html$Html$td = _VirtualDom_node('td');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$tr = _VirtualDom_node('tr');
-var $author$project$Upload$csvErrors = function (msg) {
+var $author$project$FixCsv$csvErrors = function (msg) {
 	return A2(
 		$elm$html$Html$tr,
 		_List_Nil,
@@ -5635,7 +5635,7 @@ var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$table = _VirtualDom_node('table');
-var $author$project$Upload$viewCSVErrors = F2(
+var $author$project$FixCsv$viewCSVErrors = F2(
 	function (fName, msgs) {
 		var title = A2(
 			$elm$core$String$join,
@@ -5649,7 +5649,7 @@ var $author$project$Upload$viewCSVErrors = F2(
 			_List_fromArray(
 				[
 					$elm$html$Html$Events$onClick(
-					A3($author$project$Upload$FileDownload, dlFileName, 'text/txt', str))
+					A3($author$project$FixCsv$FileDownload, dlFileName, 'text/txt', str))
 				]),
 			_List_fromArray(
 				[
@@ -5676,11 +5676,11 @@ var $author$project$Upload$viewCSVErrors = F2(
 						[
 							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
 						]),
-					A2($elm$core$List$map, $author$project$Upload$csvErrors, msgs)),
+					A2($elm$core$List$map, $author$project$FixCsv$csvErrors, msgs)),
 					dlButton
 				]));
 	});
-var $author$project$Upload$csvCol = F2(
+var $author$project$FixCsv$csvCol = F2(
 	function (colNo, value) {
 		return A2(
 			$elm$core$List$member,
@@ -5703,13 +5703,13 @@ var $author$project$Upload$csvCol = F2(
 					$elm$html$Html$text(value)
 				]));
 	});
-var $author$project$Upload$csvRow = function (columns) {
+var $author$project$FixCsv$csvRow = function (columns) {
 	return A2(
 		$elm$html$Html$tr,
 		_List_Nil,
-		A2($elm$core$List$indexedMap, $author$project$Upload$csvCol, columns));
+		A2($elm$core$List$indexedMap, $author$project$FixCsv$csvCol, columns));
 };
-var $author$project$Upload$viewCSVFixed = F2(
+var $author$project$FixCsv$viewCSVFixed = F2(
 	function (fName, lines) {
 		var str = A2(
 			$elm$core$String$join,
@@ -5724,7 +5724,7 @@ var $author$project$Upload$viewCSVFixed = F2(
 			_List_fromArray(
 				[
 					$elm$html$Html$Events$onClick(
-					A3($author$project$Upload$FileDownload, dlFileName, 'text/csv', str))
+					A3($author$project$FixCsv$FileDownload, dlFileName, 'text/csv', str))
 				]),
 			_List_fromArray(
 				[
@@ -5742,11 +5742,11 @@ var $author$project$Upload$viewCSVFixed = F2(
 						[
 							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
 						]),
-					A2($elm$core$List$map, $author$project$Upload$csvRow, lines)),
+					A2($elm$core$List$map, $author$project$FixCsv$csvRow, lines)),
 					dlButton
 				]));
 	});
-var $author$project$Upload$CsvRequested = {$: 0};
+var $author$project$FixCsv$CsvRequested = {$: 0};
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$Attributes$height = function (n) {
 	return A2(
@@ -5782,7 +5782,7 @@ var $elm$html$Html$Attributes$width = function (n) {
 		'width',
 		$elm$core$String$fromInt(n));
 };
-var $author$project$Upload$viewFixCsv = function (_v0) {
+var $author$project$FixCsv$viewFixCsv = function (_v0) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
@@ -5835,7 +5835,7 @@ var $author$project$Upload$viewFixCsv = function (_v0) {
 										$elm$html$Html$button,
 										_List_fromArray(
 											[
-												$elm$html$Html$Events$onClick($author$project$Upload$CsvRequested)
+												$elm$html$Html$Events$onClick($author$project$FixCsv$CsvRequested)
 											]),
 										_List_fromArray(
 											[
@@ -5846,27 +5846,27 @@ var $author$project$Upload$viewFixCsv = function (_v0) {
 					]))
 			]));
 };
-var $author$project$Upload$view = function (model) {
+var $author$project$FixCsv$view = function (model) {
 	var _v0 = model.an;
 	if (_v0.$ === 1) {
-		return $author$project$Upload$viewFixCsv(0);
+		return $author$project$FixCsv$viewFixCsv(0);
 	} else {
 		var mapped = _v0.a;
 		if (!mapped.$) {
 			var msgs = mapped.a;
-			return A2($author$project$Upload$viewCSVErrors, model.ag, msgs);
+			return A2($author$project$FixCsv$viewCSVErrors, model.ag, msgs);
 		} else {
 			var lines = mapped.a;
-			return A2($author$project$Upload$viewCSVFixed, model.ag, lines);
+			return A2($author$project$FixCsv$viewCSVFixed, model.ag, lines);
 		}
 	}
 };
-var $author$project$Upload$main = $elm$browser$Browser$element(
-	{bI: $author$project$Upload$init, b4: $author$project$Upload$subscriptions, b9: $author$project$Upload$update, ca: $author$project$Upload$view});
-_Platform_export({'Upload':{'init':$author$project$Upload$main(
+var $author$project$FixCsv$main = $elm$browser$Browser$element(
+	{bI: $author$project$FixCsv$init, b4: $author$project$FixCsv$subscriptions, b9: $author$project$FixCsv$update, ca: $author$project$FixCsv$view});
+_Platform_export({'FixCsv':{'init':$author$project$FixCsv$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
-  var app = Elm.Upload.init({ node: document.getElementById("elm") });
+  var app = Elm.FixCsv.init({ node: document.getElementById("elm") });
 }
 catch (e)
 {

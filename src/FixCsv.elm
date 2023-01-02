@@ -1,4 +1,4 @@
-module Upload exposing (..)
+module FixCsv exposing (..)
 
 -- https://github.com/elm/file/blob/master/README.md
 
