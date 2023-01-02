@@ -40,7 +40,7 @@ mapValue colNo existingValue =
 
 mapLineErr : Int -> Int -> Int -> String
 mapLineErr reqCols lineNo actCols =
-    [ "Error at line "
+    [ "at line "
     , String.fromInt (lineNo + 1)
     , ", found "
     , String.fromInt actCols

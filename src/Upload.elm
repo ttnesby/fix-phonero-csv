@@ -7,7 +7,7 @@ import Csv exposing (..)
 import File exposing (File)
 import File.Download as Download
 import File.Select as Select
-import Html exposing (Html, a, button, div, img, table, td, text, tr)
+import Html exposing (Html, a, button, div, img, p, table, td, text, tr)
 import Html.Attributes exposing (height, href, src, style, target, width)
 import Html.Events exposing (onClick)
 import String
@@ -37,17 +37,68 @@ csvErrors msg =
     tr [] [ td [] [ text msg ] ]
 
 
-downloadCSV : List (List String) -> String -> Cmd Msg
-downloadCSV csv fName =
-    csv
-        |> List.map (String.join ";")
-        |> String.join "\n"
-        |> (\str -> Download.string fName "text/csv" str)
+viewFixCsv : () -> Html Msg
+viewFixCsv () =
+    div []
+        [ table [ style "border-spacing" "5px" ]
+            [ tr []
+                [ td []
+                    [ a [ target "_blank", href "https://github.com/ttnesby/fix-phonero-csv" ]
+                        [ img [ src "./media/github-mark.png", width 25, height 25 ] []
+                        ]
+                    ]
+                , td []
+                    [ button [ onClick CsvRequested ] [ text "Fix CSV" ]
+                    ]
+                ]
+            ]
+        ]
 
 
-downloadFileName : String -> String
-downloadFileName fName =
-    String.dropRight 4 fName ++ "-FIXED.csv"
+viewCSVErrors : String -> List String -> Html Msg
+viewCSVErrors fName msgs =
+    let
+        dlFileName =
+            String.dropRight 4 fName ++ "-ERRORS.txt"
+
+        title =
+            String.join " " [ "Error(s) in uploaded file", fName ]
+
+        str =
+            title ++ "\n\n" ++ (msgs |> String.join "\n")
+
+        dlButton =
+            button [ onClick (FileDownload dlFileName "text/txt" str) ] [ text <| "Download " ++ dlFileName ]
+    in
+    div []
+        [ p [ style "background-color" "yellow" ] [ text title ]
+        , table [ style "border-spacing" "10px" ] (List.map csvErrors msgs)
+        , dlButton
+        ]
+
+
+viewCSVFixed : String -> List (List String) -> Html Msg
+viewCSVFixed fName lines =
+    let
+        dlFileName =
+            String.dropRight 4 fName ++ "-FIXED.csv"
+
+        str =
+            lines |> List.map (String.join ";") |> String.join "\n"
+
+        dlButton =
+            button [ onClick (FileDownload dlFileName "text/csv" str) ] [ text <| "Download " ++ dlFileName ]
+    in
+    div []
+        [ dlButton
+        , table [ style "border-spacing" "10px" ] (List.map csvRow lines)
+        , dlButton
+        ]
+
+
+downloadFile : String -> String -> String -> Cmd Msg
+downloadFile fName mime text =
+    Download.string fName mime text
 
 
 
@@ -87,7 +138,7 @@ type Msg
     = CsvRequested
     | CsvSelected File
     | CsvUpLoaded String
-    | CsvDownload (List (List String)) String
+    | FileDownload String String String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -108,9 +159,9 @@ update msg model =
             , Cmd.none
             )
 
-        CsvDownload lines fname ->
-            ( model
-            , downloadCSV lines fname
+        FileDownload fname mime text ->
+            ( Model Nothing ""
+            , downloadFile fname mime text
             )
 
 
@@ -122,39 +173,15 @@ view : Model -> Html Msg
 view model =
     case model.csv of
         Nothing ->
-            div []
-                [ table [ style "border-spacing" "5px" ]
-                    [ tr []
-                        [ td []
-                            [ a [ target "_blank", href "https://github.com/ttnesby/fix-phonero-csv" ]
-                                [ img [ src "./media/github-mark.png", width 25, height 25 ] []
-                                ]
-                            ]
-                        , td []
-                            [ button [ onClick CsvRequested ] [ text "Load CSV" ]
-                            ]
-                        ]
-                    ]
-                ]
+            viewFixCsv ()
 
         Just mapped ->
             case mapped of
                 Errors msgs ->
-                    div [] [ table [ style "border-spacing" "10px" ] (List.map csvErrors msgs) ]
+                    viewCSVErrors model.fName msgs
 
                 Success lines ->
-                    let
-                        dlFileName =
-                            downloadFileName model.fName
-
-                        dlButtonName =
-                            "Download " ++ dlFileName
-                    in
-                    div []
-                        [ button [ onClick (CsvDownload lines dlFileName) ] [ text dlButtonName ]
-                        , table [ style "border-spacing" "10px" ] (List.map csvRow lines)
-                        , button [ onClick (CsvDownload lines dlFileName) ] [ text dlButtonName ]
-                        ]
+                    viewCSVFixed model.fName lines
 
 
 

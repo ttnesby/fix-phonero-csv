@@ -798,11 +798,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.aw.aa === region.aJ.aa)
+	if (region.aw._ === region.aJ._)
 	{
-		return 'on line ' + region.aw.aa;
+		return 'on line ' + region.aw._;
 	}
-	return 'on lines ' + region.aw.aa + ' through ' + region.aJ.aa;
+	return 'on lines ' + region.aw._ + ' through ' + region.aJ._;
 }
 
 
@@ -5347,7 +5347,7 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Upload$Model = F2(
 	function (csv, fName) {
-		return {an: csv, Z: fName};
+		return {an: csv, ag: fName};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5361,11 +5361,11 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Upload$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Upload$CsvLoaded = function (a) {
-	return {$: 2, a: a};
-};
 var $author$project$Upload$CsvSelected = function (a) {
 	return {$: 1, a: a};
+};
+var $author$project$Upload$CsvUpLoaded = function (a) {
+	return {$: 2, a: a};
 };
 var $elm$time$Time$Posix = $elm$core$Basics$identity;
 var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
@@ -5376,13 +5376,9 @@ var $elm$file$File$Download$string = F3(
 			$elm$core$Basics$never,
 			A3(_File_download, name, mime, content));
 	});
-var $author$project$Upload$downloadCSV = F2(
-	function (csv, fName) {
-		return A3(
-			$elm$file$File$Download$string,
-			fName,
-			'text/csv',
-			A2($elm$core$String$join, '\n', csv));
+var $author$project$Upload$downloadFile = F3(
+	function (fName, mime, text) {
+		return A3($elm$file$File$Download$string, fName, mime, text);
 	});
 var $elm$file$File$Select$file = F2(
 	function (mimes, toMsg) {
@@ -5396,14 +5392,14 @@ var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
 };
 var $author$project$Csv$mapLineErr = F3(
-	function (reqCols, lineNo, actCol) {
+	function (reqCols, lineNo, actCols) {
 		return $elm$core$String$concat(
 			_List_fromArray(
 				[
-					'At line ',
+					'at line ',
 					$elm$core$String$fromInt(lineNo + 1),
 					', found ',
-					$elm$core$String$fromInt(actCol),
+					$elm$core$String$fromInt(actCols),
 					' column(s), expected ',
 					$elm$core$String$fromInt(reqCols)
 				]));
@@ -5470,8 +5466,76 @@ var $author$project$Csv$mapLine = F2(
 		}(
 			$author$project$Csv$split(str));
 	});
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (!_v0.$) {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
+	});
+var $author$project$Csv$removeEmptyLines = function (l) {
+	var emptyStrToMaybe = function (s) {
+		return $elm$core$String$isEmpty(s) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(s);
+	};
+	return A2($elm$core$List$filterMap, emptyStrToMaybe, l);
+};
+var $author$project$Csv$Errors = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$Csv$Success = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $elm$core$Result$toMaybe = function (result) {
+	if (!result.$) {
+		var v = result.a;
+		return $elm$core$Maybe$Just(v);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Csv$toErrorsOrSuccess = function (l) {
+	var errorsOrSuccess = function (_v1) {
+		var errors = _v1.a;
+		var mappedLines = _v1.b;
+		return $elm$core$List$isEmpty(errors) ? $author$project$Csv$Success(mappedLines) : $author$project$Csv$Errors(errors);
+	};
+	var errToMaybe = function (r) {
+		if (r.$ === 1) {
+			var msg = r.a;
+			return $elm$core$Maybe$Just(msg);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	};
+	return errorsOrSuccess(
+		_Utils_Tuple2(
+			A2($elm$core$List$filterMap, errToMaybe, l),
+			A2($elm$core$List$filterMap, $elm$core$Result$toMaybe, l)));
+};
 var $author$project$Csv$map = function (csv) {
-	return A2($elm$core$List$indexedMap, $author$project$Csv$mapLine, csv);
+	return $author$project$Csv$toErrorsOrSuccess(
+		A2(
+			$elm$core$List$indexedMap,
+			$author$project$Csv$mapLine,
+			$author$project$Csv$removeEmptyLines(csv)));
 };
 var $elm$file$File$name = _File_name;
 var $elm$file$File$toString = _File_toString;
@@ -5492,11 +5556,11 @@ var $author$project$Upload$update = F2(
 					_Utils_update(
 						model,
 						{
-							Z: $elm$file$File$name(file)
+							ag: $elm$file$File$name(file)
 						}),
 					A2(
 						$elm$core$Task$perform,
-						$author$project$Upload$CsvLoaded,
+						$author$project$Upload$CsvUpLoaded,
 						$elm$file$File$toString(file)));
 			case 2:
 				var content = msg.a;
@@ -5510,32 +5574,112 @@ var $author$project$Upload$update = F2(
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
+				var fname = msg.a;
+				var mime = msg.b;
+				var text = msg.c;
 				return _Utils_Tuple2(
-					model,
-					A2(
-						$author$project$Upload$downloadCSV,
-						_List_fromArray(
-							['testing']),
-						model.Z));
+					A2($author$project$Upload$Model, $elm$core$Maybe$Nothing, ''),
+					A3($author$project$Upload$downloadFile, fname, mime, text));
 		}
 	});
-var $author$project$Upload$CsvDownload = {$: 3};
-var $author$project$Upload$CsvRequested = {$: 0};
-var $elm$html$Html$a = _VirtualDom_node('a');
+var $author$project$Upload$FileDownload = F3(
+	function (a, b, c) {
+		return {$: 3, a: a, b: b, c: c};
+	});
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$td = _VirtualDom_node('td');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$tr = _VirtualDom_node('tr');
+var $author$project$Upload$csvErrors = function (msg) {
+	return A2(
+		$elm$html$Html$tr,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$td,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(msg)
+					]))
+			]));
+};
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$String$dropRight = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
+	});
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$html$Html$table = _VirtualDom_node('table');
+var $author$project$Upload$viewCSVErrors = F2(
+	function (fName, msgs) {
+		var title = A2(
+			$elm$core$String$join,
+			' ',
+			_List_fromArray(
+				['Error(s) in uploaded file', fName]));
+		var str = title + ('\n\n' + A2($elm$core$String$join, '\n', msgs));
+		var dlFileName = A2($elm$core$String$dropRight, 4, fName) + '-ERRORS.txt';
+		var dlButton = A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					A3($author$project$Upload$FileDownload, dlFileName, 'text/txt', str))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Download ' + dlFileName)
+				]));
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$p,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'background-color', 'yellow')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(title)
+						])),
+					A2(
+					$elm$html$Html$table,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
+						]),
+					A2($elm$core$List$map, $author$project$Upload$csvErrors, msgs)),
+					dlButton
+				]));
+	});
 var $author$project$Upload$csvCol = F2(
 	function (colNo, value) {
 		return A2(
@@ -5559,61 +5703,51 @@ var $author$project$Upload$csvCol = F2(
 					$elm$html$Html$text(value)
 				]));
 	});
-var $elm$core$List$repeatHelp = F3(
-	function (result, n, value) {
-		repeatHelp:
-		while (true) {
-			if (n <= 0) {
-				return result;
-			} else {
-				var $temp$result = A2($elm$core$List$cons, value, result),
-					$temp$n = n - 1,
-					$temp$value = value;
-				result = $temp$result;
-				n = $temp$n;
-				value = $temp$value;
-				continue repeatHelp;
-			}
-		}
-	});
-var $elm$core$List$repeat = F2(
-	function (n, value) {
-		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
-	});
-var $elm$html$Html$tr = _VirtualDom_node('tr');
-var $author$project$Upload$csvRow = function (row) {
+var $author$project$Upload$csvRow = function (columns) {
 	return A2(
 		$elm$html$Html$tr,
 		_List_Nil,
-		function () {
-			if (!row.$) {
-				var columns = row.a;
-				return A2($elm$core$List$indexedMap, $author$project$Upload$csvCol, columns);
-			} else {
-				var msg = row.a;
-				return A2(
-					$elm$core$List$indexedMap,
-					$author$project$Upload$csvCol,
+		A2($elm$core$List$indexedMap, $author$project$Upload$csvCol, columns));
+};
+var $author$project$Upload$viewCSVFixed = F2(
+	function (fName, lines) {
+		var str = A2(
+			$elm$core$String$join,
+			'\n',
+			A2(
+				$elm$core$List$map,
+				$elm$core$String$join(';'),
+				lines));
+		var dlFileName = A2($elm$core$String$dropRight, 4, fName) + '-FIXED.csv';
+		var dlButton = A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					A3($author$project$Upload$FileDownload, dlFileName, 'text/csv', str))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Download ' + dlFileName)
+				]));
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					dlButton,
 					A2(
-						$elm$core$List$append,
-						A2($elm$core$List$repeat, $author$project$Csv$requiredColumns - 1, ''),
-						_List_fromArray(
-							[msg])));
-			}
-		}());
-};
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $elm$core$String$dropRight = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
+					$elm$html$Html$table,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
+						]),
+					A2($elm$core$List$map, $author$project$Upload$csvRow, lines)),
+					dlButton
+				]));
 	});
-var $author$project$Upload$downloadFileName = F2(
-	function (fName, postfix) {
-		return A2($elm$core$String$dropRight, 4, fName) + ('-' + (postfix + '.csv'));
-	});
+var $author$project$Upload$CsvRequested = {$: 0};
+var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$Attributes$height = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -5635,30 +5769,12 @@ var $elm$html$Html$Attributes$href = function (url) {
 		_VirtualDom_noJavaScriptUri(url));
 };
 var $elm$html$Html$img = _VirtualDom_node('img');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
-var $elm$html$Html$table = _VirtualDom_node('table');
 var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
 var $elm$html$Html$Attributes$width = function (n) {
 	return A2(
@@ -5666,114 +5782,83 @@ var $elm$html$Html$Attributes$width = function (n) {
 		'width',
 		$elm$core$String$fromInt(n));
 };
+var $author$project$Upload$viewFixCsv = function (_v0) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$table,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'border-spacing', '5px')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$tr,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$target('_blank'),
+												$elm$html$Html$Attributes$href('https://github.com/ttnesby/fix-phonero-csv')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$img,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$src('./media/github-mark.png'),
+														$elm$html$Html$Attributes$width(25),
+														$elm$html$Html$Attributes$height(25)
+													]),
+												_List_Nil)
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Upload$CsvRequested)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Fix CSV')
+											]))
+									]))
+							]))
+					]))
+			]));
+};
 var $author$project$Upload$view = function (model) {
 	var _v0 = model.an;
 	if (_v0.$ === 1) {
-		return A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$table,
-					_List_fromArray(
-						[
-							A2($elm$html$Html$Attributes$style, 'border-spacing', '5px')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$tr,
-							_List_Nil,
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$td,
-									_List_Nil,
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$a,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$target('_blank'),
-													$elm$html$Html$Attributes$href('https://github.com/ttnesby/fix-phonero-csv')
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$elm$html$Html$img,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$src('./media/github-mark.png'),
-															$elm$html$Html$Attributes$width(25),
-															$elm$html$Html$Attributes$height(25)
-														]),
-													_List_Nil)
-												]))
-										])),
-									A2(
-									$elm$html$Html$td,
-									_List_Nil,
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$button,
-											_List_fromArray(
-												[
-													$elm$html$Html$Events$onClick($author$project$Upload$CsvRequested)
-												]),
-											_List_fromArray(
-												[
-													$elm$html$Html$text('Load CSV')
-												]))
-										]))
-								]))
-						]))
-				]));
+		return $author$project$Upload$viewFixCsv(0);
 	} else {
-		var content = _v0.a;
-		var isErr = function (r) {
-			if (r.$ === 1) {
-				return true;
-			} else {
-				return false;
-			}
-		};
-		var dlFileName = A2($elm$core$List$any, isErr, content) ? A2($author$project$Upload$downloadFileName, model.Z, 'ERROR') : A2($author$project$Upload$downloadFileName, model.Z, 'FIXED');
-		return A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick($author$project$Upload$CsvDownload)
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Download ' + dlFileName)
-						])),
-					A2(
-					$elm$html$Html$table,
-					_List_fromArray(
-						[
-							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
-						]),
-					A2($elm$core$List$map, $author$project$Upload$csvRow, content)),
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick($author$project$Upload$CsvDownload)
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Download ' + dlFileName)
-						]))
-				]));
+		var mapped = _v0.a;
+		if (!mapped.$) {
+			var msgs = mapped.a;
+			return A2($author$project$Upload$viewCSVErrors, model.ag, msgs);
+		} else {
+			var lines = mapped.a;
+			return A2($author$project$Upload$viewCSVFixed, model.ag, lines);
+		}
 	}
 };
 var $author$project$Upload$main = $elm$browser$Browser$element(
