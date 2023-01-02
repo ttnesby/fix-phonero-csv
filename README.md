@@ -4,48 +4,78 @@
 
 The repo contains an elm module that can be used to map the phonero csv files for compliance with expected CSV format of a given financial software.
 
-See `./src/Upload.elm`
+See `./src/FixCsv.elm`
 
 ## Single Page Application (SPA)
 
 The logic of the SPA is
-1. A button for uploading a csv file
-2. The mapped content is displayed in a textarea
-3. A button for downloading the mapped content
+1. A button for uploading a csv file and automatic re-mapping 
+2. The re-mapping has one of two outcomes
+3. `Success` - the mapped content is displayed as table with mapped columns highlighted
+4. `Errors` - the error messages are displayed as table
+5. In both outcomes, the new csv content or error messages can be downloaded
+6. After downloading, the SPA is back to step 1. 
 
-## Mapping logic
+## CSV mapping logic
 
-The core mapping logic is straight forward. 
+The mapping logic is found in `./src/Csv.elm`
+
+The core of the mapping is a simple replace of the value in certain columns with a new value.
 
 ```elm
 mapValue : Int -> String -> String
-mapValue colNo value =
-    if colNo == 0 || colNo == 1 then
+mapValue colNo existingValue =
+    if List.member colNo [ 0, 1 ] then
         "0"
 
-    else if colNo == 4 || colNo == 5 || colNo == 6 then
+    else if List.member colNo [ 4, 5, 6 ] then
         "0.00"
 
     else if colNo == 16 then
         "\"\""
 
     else
-        value
+        existingValue
+```
+
+A few test cases are found in `./tests/CsvTests.elm`
+
+```zsh
+elm-test
+
+# Result
+Compiling > Starting tests
+
+elm-test 0.19.1-revision10
+--------------------------
+
+Running 11 tests. To reproduce these results, run: elm-test --fuzz 100 --seed 332162524374445
+
+
+TEST RUN PASSED
+
+Duration: 80 ms
+Passed:   11
+Failed:   0
 ```
 
 ## Build index.html
 
 ```zsh
-elm make ./src/Map.elm --optimize
+elm make ./src/FixCsv.elm --optimize
 ```
 
-## Download file
+## Downloaded file
 
-The downloaded file will be in `~/Downloads/<selected filename>-FIXED.csv`
+A downloaded file will be in 
+- `~/Downloads/<selected filename>-FIXED.csv` for successful CSV mapping
+- `~/Downloads/<selected filename>-ERRORS.txt` for CSV mapping errors
 
 # Netlify deployment
 
 The [SPA is deployed on Netlify](https://torstein-nesby.netlify.app/).
+
+In order to build correcly, the build settings in Netlify needs to be set up correctly.
 
 ## Redirects
 
@@ -53,8 +83,3 @@ One last things that you'll need to set up is the redirects for SPA. Since all t
 Which means all the path needs to be redirected to index.html.
 
 See `./netlify.toml`
-
-
-
-
-

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Upload</title>
+  <title>FixCsv</title>
   <style>body { padding: 0; margin: 0; }</style>
 </head>
 
@@ -798,11 +798,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.K.A === region.P.A)
+	if (region.aw._ === region.aJ._)
 	{
-		return 'on line ' + region.K.A;
+		return 'on line ' + region.aw._;
 	}
-	return 'on lines ' + region.K.A + ' through ' + region.P.A;
+	return 'on lines ' + region.aw._ + ' through ' + region.aJ._;
 }
 
 
@@ -1871,9 +1871,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.av,
-		impl.aD,
-		impl.aB,
+		impl.bI,
+		impl.b9,
+		impl.b4,
 		function() { return function() {} }
 	);
 });
@@ -2733,9 +2733,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		o: func(record.o),
-		L: record.L,
-		I: record.I
+		F: func(record.F),
+		ax: record.ax,
+		au: record.au
 	}
 });
 
@@ -3003,11 +3003,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.o;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.L;
+		var message = !tag ? value : tag < 3 ? value.a : value.F;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ax;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.I) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.au) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3957,11 +3957,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.av,
-		impl.aD,
-		impl.aB,
+		impl.bI,
+		impl.b9,
+		impl.b4,
 		function(sendToApp, initialModel) {
-			var view = impl.aE;
+			var view = impl.ca;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3993,12 +3993,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.av,
-		impl.aD,
-		impl.aB,
+		impl.bI,
+		impl.b9,
+		impl.b4,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.J && impl.J(sendToApp)
-			var view = impl.aE;
+			var divertHrefToApp = impl.av && impl.av(sendToApp)
+			var view = impl.ca;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4006,12 +4006,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ao);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.br);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aC) && (_VirtualDom_doc.title = title = doc.aC);
+				(title !== doc.b7) && (_VirtualDom_doc.title = title = doc.b7);
 			});
 		}
 	);
@@ -4067,12 +4067,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.ax;
-	var onUrlRequest = impl.ay;
+	var onUrlChange = impl.bX;
+	var onUrlRequest = impl.bY;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		J: function(sendToApp)
+		av: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4088,9 +4088,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ab === next.ab
-							&& curr.T === next.T
-							&& curr.Z.a === next.Z.a
+							&& curr.a4 === next.a4
+							&& curr.aQ === next.aQ
+							&& curr.a1.a === next.a1.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4098,13 +4098,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		av: function(flags)
+		bI: function(flags)
 		{
-			return A3(impl.av, flags, _Browser_getUrl(), key);
+			return A3(impl.bI, flags, _Browser_getUrl(), key);
 		},
-		aE: impl.aE,
-		aD: impl.aD,
-		aB: impl.aB
+		ca: impl.ca,
+		b9: impl.b9,
+		b4: impl.b4
 	});
 }
 
@@ -4170,17 +4170,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { at: 'hidden', ap: 'visibilitychange' }
+		? { bF: 'hidden', bu: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { at: 'mozHidden', ap: 'mozvisibilitychange' }
+		? { bF: 'mozHidden', bu: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { at: 'msHidden', ap: 'msvisibilitychange' }
+		? { bF: 'msHidden', bu: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { at: 'webkitHidden', ap: 'webkitvisibilitychange' }
-		: { at: 'hidden', ap: 'visibilitychange' };
+		? { bF: 'webkitHidden', bu: 'webkitvisibilitychange' }
+		: { bF: 'hidden', bu: 'visibilitychange' };
 }
 
 
@@ -4261,12 +4261,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		af: _Browser_getScene(),
-		ai: {
-			ak: _Browser_window.pageXOffset,
-			al: _Browser_window.pageYOffset,
-			aj: _Browser_doc.documentElement.clientWidth,
-			S: _Browser_doc.documentElement.clientHeight
+		a9: _Browser_getScene(),
+		bh: {
+			bk: _Browser_window.pageXOffset,
+			bl: _Browser_window.pageYOffset,
+			bj: _Browser_doc.documentElement.clientWidth,
+			aP: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4276,8 +4276,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		aj: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		S: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		bj: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		aP: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4300,15 +4300,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			af: {
-				aj: node.scrollWidth,
-				S: node.scrollHeight
+			a9: {
+				bj: node.scrollWidth,
+				aP: node.scrollHeight
 			},
-			ai: {
-				ak: node.scrollLeft,
-				al: node.scrollTop,
-				aj: node.clientWidth,
-				S: node.clientHeight
+			bh: {
+				bk: node.scrollLeft,
+				bl: node.scrollTop,
+				bj: node.clientWidth,
+				aP: node.clientHeight
 			}
 		};
 	});
@@ -4338,18 +4338,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			af: _Browser_getScene(),
-			ai: {
-				ak: x,
-				al: y,
-				aj: _Browser_doc.documentElement.clientWidth,
-				S: _Browser_doc.documentElement.clientHeight
+			a9: _Browser_getScene(),
+			bh: {
+				bk: x,
+				bl: y,
+				bj: _Browser_doc.documentElement.clientWidth,
+				aP: _Browser_doc.documentElement.clientHeight
 			},
-			ar: {
-				ak: x + rect.left,
-				al: y + rect.top,
-				aj: rect.width,
-				S: rect.height
+			bz: {
+				bk: x + rect.left,
+				bl: y + rect.top,
+				bj: rect.width,
+				aP: rect.height
 			}
 		};
 	});
@@ -4968,25 +4968,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.a) {
+		if (!builder.g) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.c),
+				$elm$core$Elm$JsArray$length(builder.i),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.c);
+				builder.i);
 		} else {
-			var treeLen = builder.a * $elm$core$Array$branchFactor;
+			var treeLen = builder.g * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.d) : builder.d;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.a);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.j) : builder.j;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.g);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.c) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.i) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.c);
+				builder.i);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -4999,7 +4999,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{d: nodeList, a: (len / $elm$core$Array$branchFactor) | 0, c: tail});
+					{j: nodeList, g: (len / $elm$core$Array$branchFactor) | 0, i: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -5066,7 +5066,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {R: fragment, T: host, X: path, Z: port_, ab: protocol, ac: query};
+		return {aL: fragment, aQ: host, a$: path, a1: port_, a4: protocol, a5: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5345,38 +5345,67 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Upload$Model = F2(
+var $author$project$FixCsv$Model = F2(
 	function (csv, fName) {
-		return {F: csv, z: fName};
+		return {an: csv, ag: fName};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Upload$init = function (_v0) {
+var $author$project$FixCsv$init = function (_v0) {
 	return _Utils_Tuple2(
-		A2($author$project$Upload$Model, $elm$core$Maybe$Nothing, ''),
+		A2($author$project$FixCsv$Model, $elm$core$Maybe$Nothing, ''),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Upload$subscriptions = function (_v0) {
+var $author$project$FixCsv$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Upload$CsvLoaded = function (a) {
-	return {$: 2, a: a};
-};
-var $author$project$Upload$CsvSelected = function (a) {
+var $author$project$FixCsv$CsvSelected = function (a) {
 	return {$: 1, a: a};
 };
+var $author$project$FixCsv$CsvUpLoaded = function (a) {
+	return {$: 2, a: a};
+};
+var $elm$time$Time$Posix = $elm$core$Basics$identity;
+var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
+var $elm$file$File$Download$string = F3(
+	function (name, mime, content) {
+		return A2(
+			$elm$core$Task$perform,
+			$elm$core$Basics$never,
+			A3(_File_download, name, mime, content));
+	});
+var $author$project$FixCsv$downloadFile = F3(
+	function (fName, mime, text) {
+		return A3($elm$file$File$Download$string, fName, mime, text);
+	});
+var $elm$file$File$Select$file = F2(
+	function (mimes, toMsg) {
+		return A2(
+			$elm$core$Task$perform,
+			toMsg,
+			_File_uploadOne(mimes));
+	});
+var $elm$core$String$lines = _String_lines;
 var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
 };
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $elm$core$String$dropRight = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
+var $author$project$Csv$mapLineErr = F3(
+	function (reqCols, lineNo, actCols) {
+		return $elm$core$String$concat(
+			_List_fromArray(
+				[
+					'at line ',
+					$elm$core$String$fromInt(lineNo + 1),
+					', found ',
+					$elm$core$String$fromInt(actCols),
+					' column(s), expected ',
+					$elm$core$String$fromInt(reqCols)
+				]));
 	});
+var $author$project$Csv$requiredColumns = 17;
+var $author$project$Csv$invalidNoOfColumns = $author$project$Csv$mapLineErr($author$project$Csv$requiredColumns);
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -5407,8 +5436,8 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
-var $author$project$Upload$mapValue = F2(
-	function (colNo, value) {
+var $author$project$Csv$mapValue = F2(
+	function (colNo, existingValue) {
 		return A2(
 			$elm$core$List$member,
 			colNo,
@@ -5417,74 +5446,100 @@ var $author$project$Upload$mapValue = F2(
 			$elm$core$List$member,
 			colNo,
 			_List_fromArray(
-				[4, 5, 6])) ? '0.00' : ((colNo === 16) ? '\"\"' : value));
+				[4, 5, 6])) ? '0.00' : ((colNo === 16) ? '\"\"' : existingValue));
 	});
-var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$Upload$mapLine = function (str) {
-	var split = A2($elm$core$String$split, ';', str);
-	return ($elm$core$List$length(split) === 1) ? '' : (($elm$core$List$length(split) !== 17) ? $elm$core$String$concat(
-		_List_fromArray(
-			[
-				$elm$core$String$fromInt(
-				$elm$core$List$length(split)),
-				' columns, expected 17'
-			])) : function (x) {
-		return A2($elm$core$String$dropRight, 1, x);
-	}(
-		A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, y) {
-					return x + (';' + y);
-				}),
-			'',
-			A2($elm$core$List$indexedMap, $author$project$Upload$mapValue, split))));
-};
-var $author$project$Upload$mapCSV = function (csv) {
-	if (!csv.b) {
-		return '';
-	} else {
-		var h = csv.a;
-		var t = csv.b;
-		return $author$project$Upload$mapLine(h) + ('\n' + $author$project$Upload$mapCSV(t));
-	}
-};
-var $elm$time$Time$Posix = $elm$core$Basics$identity;
-var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
-var $elm$file$File$Download$string = F3(
-	function (name, mime, content) {
-		return A2(
-			$elm$core$Task$perform,
-			$elm$core$Basics$never,
-			A3(_File_download, name, mime, content));
+var $author$project$Csv$splitStr = ';';
+var $author$project$Csv$split = $elm$core$String$split($author$project$Csv$splitStr);
+var $author$project$Csv$mapLine = F2(
+	function (lineNo, str) {
+		return function (l) {
+			return function (_v0) {
+				var columns = _v0.a;
+				var noOfColumns = _v0.b;
+				return _Utils_eq(noOfColumns, $author$project$Csv$requiredColumns) ? $elm$core$Result$Ok(
+					A2($elm$core$List$indexedMap, $author$project$Csv$mapValue, columns)) : $elm$core$Result$Err(
+					A2($author$project$Csv$invalidNoOfColumns, lineNo, noOfColumns));
+			}(
+				_Utils_Tuple2(
+					l,
+					$elm$core$List$length(l)));
+		}(
+			$author$project$Csv$split(str));
 	});
-var $author$project$Upload$downloadCSV = F2(
-	function (csv, fName) {
-		if (csv.$ === 1) {
-			return $elm$core$Platform$Cmd$none;
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (!_v0.$) {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
 		} else {
-			var content = csv.a;
-			return A3(
-				$elm$file$File$Download$string,
-				fName,
-				'text/csv',
-				$author$project$Upload$mapCSV(content));
+			return xs;
 		}
 	});
-var $author$project$Upload$downloadFileName = function (fName) {
-	return A2($elm$core$String$dropRight, 4, fName) + '-FIXED.csv';
-};
-var $elm$file$File$Select$file = F2(
-	function (mimes, toMsg) {
-		return A2(
-			$elm$core$Task$perform,
-			toMsg,
-			_File_uploadOne(mimes));
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
 	});
-var $elm$core$String$lines = _String_lines;
+var $author$project$Csv$removeEmptyLines = function (l) {
+	var emptyStrToMaybe = function (s) {
+		return $elm$core$String$isEmpty(s) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(s);
+	};
+	return A2($elm$core$List$filterMap, emptyStrToMaybe, l);
+};
+var $author$project$Csv$Errors = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$Csv$Success = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $elm$core$Result$toMaybe = function (result) {
+	if (!result.$) {
+		var v = result.a;
+		return $elm$core$Maybe$Just(v);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Csv$toErrorsOrSuccess = function (l) {
+	var errorsOrSuccess = function (_v1) {
+		var errors = _v1.a;
+		var mappedLines = _v1.b;
+		return $elm$core$List$isEmpty(errors) ? $author$project$Csv$Success(mappedLines) : $author$project$Csv$Errors(errors);
+	};
+	var errToMaybe = function (r) {
+		if (r.$ === 1) {
+			var msg = r.a;
+			return $elm$core$Maybe$Just(msg);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	};
+	return errorsOrSuccess(
+		_Utils_Tuple2(
+			A2($elm$core$List$filterMap, errToMaybe, l),
+			A2($elm$core$List$filterMap, $elm$core$Result$toMaybe, l)));
+};
+var $author$project$Csv$map = function (csv) {
+	return $author$project$Csv$toErrorsOrSuccess(
+		A2(
+			$elm$core$List$indexedMap,
+			$author$project$Csv$mapLine,
+			$author$project$Csv$removeEmptyLines(csv)));
+};
 var $elm$file$File$name = _File_name;
 var $elm$file$File$toString = _File_toString;
-var $author$project$Upload$update = F2(
+var $author$project$FixCsv$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 0:
@@ -5494,19 +5549,18 @@ var $author$project$Upload$update = F2(
 						$elm$file$File$Select$file,
 						_List_fromArray(
 							['text/csv']),
-						$author$project$Upload$CsvSelected));
+						$author$project$FixCsv$CsvSelected));
 			case 1:
 				var file = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							z: $author$project$Upload$downloadFileName(
-								$elm$file$File$name(file))
+							ag: $elm$file$File$name(file)
 						}),
 					A2(
 						$elm$core$Task$perform,
-						$author$project$Upload$CsvLoaded,
+						$author$project$FixCsv$CsvUpLoaded,
 						$elm$file$File$toString(file)));
 			case 2:
 				var content = msg.a;
@@ -5514,26 +5568,119 @@ var $author$project$Upload$update = F2(
 					_Utils_update(
 						model,
 						{
-							F: $elm$core$Maybe$Just(
-								$elm$core$String$lines(content))
+							an: $elm$core$Maybe$Just(
+								$author$project$Csv$map(
+									$elm$core$String$lines(content)))
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
+				var fname = msg.a;
+				var mime = msg.b;
+				var text = msg.c;
 				return _Utils_Tuple2(
-					model,
-					A2($author$project$Upload$downloadCSV, model.F, model.z));
+					A2($author$project$FixCsv$Model, $elm$core$Maybe$Nothing, ''),
+					A3($author$project$FixCsv$downloadFile, fname, mime, text));
 		}
 	});
-var $author$project$Upload$CsvDownload = {$: 3};
-var $author$project$Upload$CsvRequested = {$: 0};
-var $elm$html$Html$a = _VirtualDom_node('a');
+var $author$project$FixCsv$FileDownload = F3(
+	function (a, b, c) {
+		return {$: 3, a: a, b: b, c: c};
+	});
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$td = _VirtualDom_node('td');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Upload$csvCol = F2(
+var $elm$html$Html$tr = _VirtualDom_node('tr');
+var $author$project$FixCsv$csvErrors = function (msg) {
+	return A2(
+		$elm$html$Html$tr,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$td,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(msg)
+					]))
+			]));
+};
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$String$dropRight = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
+	});
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$html$Html$table = _VirtualDom_node('table');
+var $author$project$FixCsv$viewCSVErrors = F2(
+	function (fName, msgs) {
+		var title = A2(
+			$elm$core$String$join,
+			' ',
+			_List_fromArray(
+				['Error(s) in uploaded file', fName]));
+		var str = title + ('\n\n' + A2($elm$core$String$join, '\n', msgs));
+		var dlFileName = A2($elm$core$String$dropRight, 4, fName) + '-ERRORS.txt';
+		var dlButton = A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					A3($author$project$FixCsv$FileDownload, dlFileName, 'text/txt', str))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Download ' + dlFileName)
+				]));
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$p,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'background-color', 'yellow')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(title)
+						])),
+					A2(
+					$elm$html$Html$table,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
+						]),
+					A2($elm$core$List$map, $author$project$FixCsv$csvErrors, msgs)),
+					dlButton
+				]));
+	});
+var $author$project$FixCsv$csvCol = F2(
 	function (colNo, value) {
 		return A2(
 			$elm$core$List$member,
@@ -5556,18 +5703,51 @@ var $author$project$Upload$csvCol = F2(
 					$elm$html$Html$text(value)
 				]));
 	});
-var $elm$html$Html$tr = _VirtualDom_node('tr');
-var $author$project$Upload$csvRow = function (row) {
-	var cols = A2(
-		$elm$core$String$split,
-		';',
-		$author$project$Upload$mapLine(row));
+var $author$project$FixCsv$csvRow = function (columns) {
 	return A2(
 		$elm$html$Html$tr,
 		_List_Nil,
-		A2($elm$core$List$indexedMap, $author$project$Upload$csvCol, cols));
+		A2($elm$core$List$indexedMap, $author$project$FixCsv$csvCol, columns));
 };
-var $elm$html$Html$div = _VirtualDom_node('div');
+var $author$project$FixCsv$viewCSVFixed = F2(
+	function (fName, lines) {
+		var str = A2(
+			$elm$core$String$join,
+			'\n',
+			A2(
+				$elm$core$List$map,
+				$elm$core$String$join(';'),
+				lines));
+		var dlFileName = A2($elm$core$String$dropRight, 4, fName) + '-FIXED.csv';
+		var dlButton = A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					A3($author$project$FixCsv$FileDownload, dlFileName, 'text/csv', str))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Download ' + dlFileName)
+				]));
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					dlButton,
+					A2(
+					$elm$html$Html$table,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
+						]),
+					A2($elm$core$List$map, $author$project$FixCsv$csvRow, lines)),
+					dlButton
+				]));
+	});
+var $author$project$FixCsv$CsvRequested = {$: 0};
+var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$Attributes$height = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -5589,30 +5769,12 @@ var $elm$html$Html$Attributes$href = function (url) {
 		_VirtualDom_noJavaScriptUri(url));
 };
 var $elm$html$Html$img = _VirtualDom_node('img');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
-var $elm$html$Html$table = _VirtualDom_node('table');
 var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
 var $elm$html$Html$Attributes$width = function (n) {
 	return A2(
@@ -5620,114 +5782,91 @@ var $elm$html$Html$Attributes$width = function (n) {
 		'width',
 		$elm$core$String$fromInt(n));
 };
-var $author$project$Upload$view = function (model) {
-	var _v0 = model.F;
+var $author$project$FixCsv$viewFixCsv = function (_v0) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$table,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'border-spacing', '5px')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$tr,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$target('_blank'),
+												$elm$html$Html$Attributes$href('https://github.com/ttnesby/fix-phonero-csv')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$img,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$src('./media/github-mark.png'),
+														$elm$html$Html$Attributes$width(25),
+														$elm$html$Html$Attributes$height(25)
+													]),
+												_List_Nil)
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$FixCsv$CsvRequested)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Fix CSV')
+											]))
+									]))
+							]))
+					]))
+			]));
+};
+var $author$project$FixCsv$view = function (model) {
+	var _v0 = model.an;
 	if (_v0.$ === 1) {
-		return A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$table,
-					_List_fromArray(
-						[
-							A2($elm$html$Html$Attributes$style, 'border-spacing', '5px')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$tr,
-							_List_Nil,
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$td,
-									_List_Nil,
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$a,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$target('_blank'),
-													$elm$html$Html$Attributes$href('https://github.com/ttnesby/fix-phonero-csv')
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$elm$html$Html$img,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$src('./media/github-mark.png'),
-															$elm$html$Html$Attributes$width(25),
-															$elm$html$Html$Attributes$height(25)
-														]),
-													_List_Nil)
-												]))
-										])),
-									A2(
-									$elm$html$Html$td,
-									_List_Nil,
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$button,
-											_List_fromArray(
-												[
-													$elm$html$Html$Events$onClick($author$project$Upload$CsvRequested)
-												]),
-											_List_fromArray(
-												[
-													$elm$html$Html$text('Load CSV')
-												]))
-										]))
-								]))
-						]))
-				]));
+		return $author$project$FixCsv$viewFixCsv(0);
 	} else {
-		var content = _v0.a;
-		return A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick($author$project$Upload$CsvDownload)
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Download ' + model.z)
-						])),
-					A2(
-					$elm$html$Html$table,
-					_List_fromArray(
-						[
-							A2($elm$html$Html$Attributes$style, 'border-spacing', '10px')
-						]),
-					A2($elm$core$List$map, $author$project$Upload$csvRow, content)),
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick($author$project$Upload$CsvDownload)
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Download ' + model.z)
-						]))
-				]));
+		var mapped = _v0.a;
+		if (!mapped.$) {
+			var msgs = mapped.a;
+			return A2($author$project$FixCsv$viewCSVErrors, model.ag, msgs);
+		} else {
+			var lines = mapped.a;
+			return A2($author$project$FixCsv$viewCSVFixed, model.ag, lines);
+		}
 	}
 };
-var $author$project$Upload$main = $elm$browser$Browser$element(
-	{av: $author$project$Upload$init, aB: $author$project$Upload$subscriptions, aD: $author$project$Upload$update, aE: $author$project$Upload$view});
-_Platform_export({'Upload':{'init':$author$project$Upload$main(
+var $author$project$FixCsv$main = $elm$browser$Browser$element(
+	{bI: $author$project$FixCsv$init, b4: $author$project$FixCsv$subscriptions, b9: $author$project$FixCsv$update, ca: $author$project$FixCsv$view});
+_Platform_export({'FixCsv':{'init':$author$project$FixCsv$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
-  var app = Elm.Upload.init({ node: document.getElementById("elm") });
+  var app = Elm.FixCsv.init({ node: document.getElementById("elm") });
 }
 catch (e)
 {
