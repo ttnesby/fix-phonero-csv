@@ -75,6 +75,8 @@ A downloaded file will be in
 
 The [SPA is deployed on Netlify](https://torstein-nesby.netlify.app/).
 
+In order to build correcly, the build settings in Netlify needs to be set up correctly.
+
 ## Redirects
 
 One last things that you'll need to set up is the redirects for SPA. Since all the routing is done by the client side, the server needs to redirect to the root for every request.
