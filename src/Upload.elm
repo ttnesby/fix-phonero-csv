@@ -27,39 +27,27 @@ csvCol colNo value =
         td [] [ text value ]
 
 
-csvRow : Result String (List String) -> Html Msg
-csvRow row =
-    tr []
-        (case row of
-            Ok columns ->
-                List.indexedMap csvCol columns
-
-            Err msg ->
-                List.indexedMap csvCol (List.append (List.repeat (requiredColumns - 1) "") [ msg ])
-        )
+csvRow : List String -> Html Msg
+csvRow columns =
+    tr [] (List.indexedMap csvCol columns)
 
 
-downloadCSV : List String -> String -> Cmd Msg
+csvErrors : String -> Html Msg
+csvErrors msg =
+    tr [] [ td [] [ text msg ] ]
+
+
+downloadCSV : List (List String) -> String -> Cmd Msg
 downloadCSV csv fName =
-    Download.string fName "text/csv" (String.join "\n" csv)
+    csv
+        |> List.map (String.join ";")
+        |> String.join "\n"
+        |> (\str -> Download.string fName "text/csv" str)
 
 
-downloadFileName : String -> List (Result String (List String)) -> String
-downloadFileName fName content =
-
-    let
-        hasErr : Result String (List String) -> Bool
-        hasErr r =
-            case r of
-                Err _ ->
-                    True
-
-                _ ->
-                    False
-
-        postfix = if List.any hasErr content then "ERROR" else "FIXED"
-    in
-        String.dropRight 4 fName ++ "-" ++ postfix ++ ".csv"
+downloadFileName : String -> String
+downloadFileName fName =
+    String.dropRight 4 fName ++ "-FIXED.csv"
 
 
 
@@ -81,7 +69,7 @@ main =
 
 
 type alias Model =
-    { csv : Maybe (List (Result String (List String)))
+    { csv : Maybe Csv.CsvMappingStatus
     , fName : String
     }
 
@@ -98,8 +86,8 @@ init _ =
 type Msg
     = CsvRequested
     | CsvSelected File
-    | CsvLoaded String
-    | CsvDownload
+    | CsvUpLoaded String
+    | CsvDownload (List (List String)) String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -112,19 +100,17 @@ update msg model =
 
         CsvSelected file ->
             ( { model | fName = File.name file }
-            , Task.perform CsvLoaded (File.toString file)
+            , Task.perform CsvUpLoaded (File.toString file)
             )
 
-        CsvLoaded content ->
+        CsvUpLoaded content ->
             ( { model | csv = Just <| Csv.map <| String.lines <| content }
             , Cmd.none
             )
 
-        CsvDownload ->
+        CsvDownload lines fname ->
             ( model
-            , case model.csv of
-                Just content -> downloadCSV [ "testing" ] (downloadFileName model.fName content)
-                Nothing -> Cmd.none
+            , downloadCSV lines fname
             )
 
 
@@ -151,12 +137,24 @@ view model =
                     ]
                 ]
 
-        Just content ->
-            div []
-                [ button [ onClick CsvDownload ] [ text <| "Download " ++ (downloadFileName model.fName content) ]
-                , table [ style "border-spacing" "10px" ] (List.map csvRow content)
-                , button [ onClick CsvDownload ] [ text <| "Download " ++ (downloadFileName model.fName content) ]
-                ]
+        Just mapped ->
+            case mapped of
+                Errors msgs ->
+                    div [] [ table [ style "border-spacing" "10px" ] (List.map csvErrors msgs) ]
+
+                Success lines ->
+                    let
+                        dlFileName =
+                            downloadFileName model.fName
+
+                        dlButtonName =
+                            "Download " ++ dlFileName
+                    in
+                    div []
+                        [ button [ onClick (CsvDownload lines dlFileName) ] [ text dlButtonName ]
+                        , table [ style "border-spacing" "10px" ] (List.map csvRow lines)
+                        , button [ onClick (CsvDownload lines dlFileName) ] [ text dlButtonName ]
+                        ]
 
 
 

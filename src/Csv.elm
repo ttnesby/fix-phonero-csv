@@ -1,5 +1,12 @@
 module Csv exposing (..)
 
+import Result exposing (toMaybe)
+
+
+type CsvMappingStatus
+    = Errors (List String)
+    | Success (List (List String))
+
 
 splitStr : String
 splitStr =
@@ -32,11 +39,11 @@ mapValue colNo existingValue =
 
 
 mapLineErr : Int -> Int -> Int -> String
-mapLineErr reqCols lineNo actCol =
+mapLineErr reqCols lineNo actCols =
     [ "Error at line "
     , String.fromInt (lineNo + 1)
     , ", found "
-    , String.fromInt actCol
+    , String.fromInt actCols
     , " column(s), expected "
     , String.fromInt reqCols
     ]
@@ -61,13 +68,51 @@ mapLine lineNo str =
                                     |> Ok
 
                             else
-                                Err <| invalidNoOfColumns lineNo noOfColumns
+                                invalidNoOfColumns lineNo noOfColumns
+                                    |> Err
                        )
            )
 
 
-map : List String -> List (Result String (List String))
+removeEmptyLines : List String -> List String
+removeEmptyLines l =
+    let
+        emptyStrToMaybe s =
+            if String.isEmpty s then
+                Nothing
+
+            else
+                Just s
+    in
+    l |> List.filterMap emptyStrToMaybe
+
+
+toErrorsOrSuccess : List (Result String (List String)) -> CsvMappingStatus
+toErrorsOrSuccess l =
+    let
+        errToMaybe r =
+            case r of
+                Err msg ->
+                    Just msg
+
+                _ ->
+                    Nothing
+
+        errorsOrSuccess : ( List String, List (List String) ) -> CsvMappingStatus
+        errorsOrSuccess ( errors, mappedLines ) =
+            if List.isEmpty errors then
+                Success mappedLines
+
+            else
+                Errors errors
+    in
+    ( List.filterMap errToMaybe l, List.filterMap toMaybe l )
+        |> errorsOrSuccess
+
+
+map : List String -> CsvMappingStatus
 map csv =
     csv
-        |> List.filterMap (\s -> if String.isEmpty s then Nothing else Just s)
+        |> removeEmptyLines
         |> List.indexedMap mapLine
+        |> toErrorsOrSuccess

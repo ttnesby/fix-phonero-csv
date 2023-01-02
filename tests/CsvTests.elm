@@ -118,30 +118,29 @@ csv =
                 (\_ ->
                     [ colGTRequired ]
                         |> Csv.map
-                        |> Expect.equal (List.singleton <| Err <| invalidNoOfColumns 0 (requiredColumns + 1))
+                        |> Expect.equal (Errors [invalidNoOfColumns 0 (requiredColumns + 1)])
                 )
             , test " 1 line, required - 1 column"
                 (\_ ->
                     [ colLTRequired ]
                         |> Csv.map
-                        |> Expect.equal (List.singleton <| Err <| invalidNoOfColumns 0 (requiredColumns - 1))
+                        |> Expect.equal (Errors [invalidNoOfColumns 0 (requiredColumns - 1)])
                 )
             , test " 1 line, required columns"
                 (\_ ->
                     [ colRequired ]
                         |> Csv.map
-                        |> Expect.equal (List.singleton <| Ok colReqMapped)
+                        |> Expect.equal (Success [colReqMapped])
                 )
             , test " 3 lines, 1st required + 1 column, 2nd required, 3rd required - 1 column"
                 (\_ ->
                     [ colGTRequired, colRequired, colLTRequired ]
                         |> Csv.map
                         |> Expect.equal
-                            [ 
-                                Err <| invalidNoOfColumns 0 (requiredColumns + 1)  
-                                ,Ok colReqMapped
-                                ,Err <| invalidNoOfColumns 2 (requiredColumns - 1)
-                            ]
+                            (Errors [ 
+                                invalidNoOfColumns 0 (requiredColumns + 1)  
+                                ,invalidNoOfColumns 2 (requiredColumns - 1)
+                            ])
                 )
             ]
         ]
