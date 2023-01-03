@@ -87,8 +87,8 @@ removeEmptyLines l =
     l |> List.filterMap emptyStrToMaybe
 
 
-toErrorsOrSuccess : List (Result String (List String)) -> CsvMappingStatus
-toErrorsOrSuccess l =
+toCsvMappingStatus : List (Result String (List String)) -> CsvMappingStatus
+toCsvMappingStatus l =
     let
         errToMaybe r =
             case r of
@@ -115,4 +115,4 @@ map csv =
     csv
         |> removeEmptyLines
         |> List.indexedMap mapLine
-        |> toErrorsOrSuccess
+        |> toCsvMappingStatus

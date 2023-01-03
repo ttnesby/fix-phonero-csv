@@ -5369,17 +5369,6 @@ var $author$project$FixCsv$CsvUpLoaded = function (a) {
 };
 var $elm$time$Time$Posix = $elm$core$Basics$identity;
 var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
-var $elm$file$File$Download$string = F3(
-	function (name, mime, content) {
-		return A2(
-			$elm$core$Task$perform,
-			$elm$core$Basics$never,
-			A3(_File_download, name, mime, content));
-	});
-var $author$project$FixCsv$downloadFile = F3(
-	function (fName, mime, text) {
-		return A3($elm$file$File$Download$string, fName, mime, text);
-	});
 var $elm$file$File$Select$file = F2(
 	function (mimes, toMsg) {
 		return A2(
@@ -5511,7 +5500,7 @@ var $elm$core$Result$toMaybe = function (result) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Csv$toErrorsOrSuccess = function (l) {
+var $author$project$Csv$toCsvMappingStatus = function (l) {
 	var errorsOrSuccess = function (_v1) {
 		var errors = _v1.a;
 		var mappedLines = _v1.b;
@@ -5531,13 +5520,20 @@ var $author$project$Csv$toErrorsOrSuccess = function (l) {
 			A2($elm$core$List$filterMap, $elm$core$Result$toMaybe, l)));
 };
 var $author$project$Csv$map = function (csv) {
-	return $author$project$Csv$toErrorsOrSuccess(
+	return $author$project$Csv$toCsvMappingStatus(
 		A2(
 			$elm$core$List$indexedMap,
 			$author$project$Csv$mapLine,
 			$author$project$Csv$removeEmptyLines(csv)));
 };
 var $elm$file$File$name = _File_name;
+var $elm$file$File$Download$string = F3(
+	function (name, mime, content) {
+		return A2(
+			$elm$core$Task$perform,
+			$elm$core$Basics$never,
+			A3(_File_download, name, mime, content));
+	});
 var $elm$file$File$toString = _File_toString;
 var $author$project$FixCsv$update = F2(
 	function (msg, model) {
@@ -5579,7 +5575,7 @@ var $author$project$FixCsv$update = F2(
 				var text = msg.c;
 				return _Utils_Tuple2(
 					A2($author$project$FixCsv$Model, $elm$core$Maybe$Nothing, ''),
-					A3($author$project$FixCsv$downloadFile, fname, mime, text));
+					A3($elm$file$File$Download$string, fname, mime, text));
 		}
 	});
 var $author$project$FixCsv$FileDownload = F3(

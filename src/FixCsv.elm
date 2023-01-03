@@ -96,11 +96,6 @@ viewCSVFixed fName lines =
         ]
 
 
-downloadFile : String -> String -> String -> Cmd Msg
-downloadFile fName mime text =
-    Download.string fName mime text
-
-
 
 -- MAIN
 
@@ -161,7 +156,7 @@ update msg model =
 
         FileDownload fname mime text ->
             ( Model Nothing ""
-            , downloadFile fname mime text
+            , Download.string fname mime text
             )
 
 
